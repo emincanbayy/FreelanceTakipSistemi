@@ -1,0 +1,29 @@
+﻿@model FreelanceTakipSistemi.Models.Kullanici
+
+@{
+    ViewData["Title"] = "Kullanıcı Kaydı";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Kayit" method="post">
+    <div class="mb-3">
+        <label asp-for="Isim" class="form-label">İsim</label>
+        <input asp-for="Isim" class="form-control" />
+        <span asp-validation-for="Isim" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">E-posta</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Parola" class="form-label">Parola</label>
+        <input asp-for="Parola" class="form-control" type="password" />
+        <span asp-validation-for="Parola" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Kayıt Ol</button>
+</form>

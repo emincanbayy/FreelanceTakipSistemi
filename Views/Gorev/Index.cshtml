@@ -1,0 +1,44 @@
+﻿@model IEnumerable<FreelanceTakipSistemi.Models.Gorev>
+@{
+    ViewData["Title"] = "Görevler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">📝 @ViewBag.ProjeAdi - Görevler</h2>
+
+<a class="btn btn-success mb-3" asp-action="Ekle" asp-route-projeId="@ViewBag.ProjeId">+ Yeni Görev</a>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Bu projeye ait henüz görev yok.</div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Başlık</th>
+                <th>Açıklama</th>
+                <th>Durum</th>
+                <th>Oluşturulma</th>
+                <th>İşlemler</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var gorev in Model)
+            {
+                <tr>
+                    <td>@gorev.Baslik</td>
+                    <td>@gorev.Aciklama</td>
+                    <td>@gorev.Durum</td>
+                    <td>@gorev.OlusturulmaTarihi.ToShortDateString()</td>
+                    <td>
+                        <a class="btn btn-sm btn-primary" asp-action="Duzenle" asp-route-id="@gorev.GorevId">Düzenle</a>
+                        <a class="btn btn-sm btn-danger" asp-action="Sil" asp-route-id="@gorev.GorevId"
+                           onclick="return confirm('Bu görevi silmek istediğine emin misin?')">Sil</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

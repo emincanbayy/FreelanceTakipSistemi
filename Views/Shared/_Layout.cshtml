@@ -1,50 +1,75 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@{
+    Layout = null;  // Eğer layout bu view'da kullanılacaksa bunu kaldırabilirsiniz
+}
+
+<!DOCTYPE html>
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FreelanceTakipSistemi</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/FreelanceTakipSistemi.styles.css" asp-append-version="true" />
+
+    <!-- Bootstrap CSS -->
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Özel Site CSS -->
+    <link href="~/css/site.css" rel="stylesheet" />
+    <!-- Varsayılan Stil ve Özelleştirilmiş Stil dosyaları -->
+    <link href="~/FreelanceTakipSistemi.styles.css" rel="stylesheet" />
+
+    <!-- Diğer CSS ve Stil Linkleri buraya eklenebilir -->
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <!-- Navbar Başlangıcı -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FreelanceTakipSistemi</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" href="/">FreelanceTakipSistemi</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" href="/">Ana Sayfa</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link" href="/Proje/Yeni">Yeni Proje Ekle</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Gorev/Yeni">Yeni Görev Ekle</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Kullanici/Cikis">Çıkış Yap</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
+        <!-- Navbar Sonu -->
     </header>
-    <div class="container">
+
+    <div class="container mt-4">
+        <!-- Sayfa İçeriği Başlangıcı -->
         <main role="main" class="pb-3">
-            @RenderBody()
+            @RenderBody() <!-- Burada her sayfa kendi içeriğini render eder -->
         </main>
+        <!-- Sayfa İçeriği Sonu -->
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - FreelanceTakipSistemi - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <!-- Footer Başlangıcı -->
+    <footer class="footer mt-5 bg-light py-3">
+        <div class="container text-center">
+            <p>&copy; 2025 FreelanceTakipSistemi - Tüm hakları saklıdır.</p>
+            <p><a href="/Home/Privacy" class="text-decoration-none">Gizlilik Politikası</a></p>
         </div>
     </footer>
+    <!-- Footer Sonu -->
+    <!-- JS Dosyaları -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Scripts bölümünü render et -->
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

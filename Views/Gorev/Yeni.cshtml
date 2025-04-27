@@ -1,0 +1,58 @@
+﻿@model FreelanceTakipSistemi.Models.Gorev
+
+@{
+    ViewData["Title"] = "Yeni Görev Ekle";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<form asp-action="Yeni" method="post">
+    <div class="mb-3">
+        <label class="form-label" for="Baslik">Görev Başlığı</label>
+        <input asp-for="Baslik" class="form-control" placeholder="Görev başlığını girin" />
+        <span asp-validation-for="Baslik" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="Aciklama">Açıklama</label>
+        <textarea asp-for="Aciklama" class="form-control" placeholder="Görev hakkında detayları yazın"></textarea>
+        <span asp-validation-for="Aciklama" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="ProjeId">Proje Seçin</label>
+        <select asp-for="ProjeId" class="form-control">
+            <option value="">Proje Seçin</option>
+            @foreach (var proje in ViewBag.Projeler as List<FreelanceTakipSistemi.Models.Proje>)
+            {
+                <option value="@proje.ProjeId">@proje.ProjeAdi</option>
+            }
+        </select>
+        <span asp-validation-for="ProjeId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="Durum">Durum</label>
+        <select asp-for="Durum" class="form-control">
+            <option value="Aktif">Aktif</option>
+            <option value="Tamamlandı">Tamamlandı</option>
+        </select>
+        <span asp-validation-for="Durum" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Görevi Kaydet</button>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mt-3">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (ViewBag.Hata != null)
+    {
+        <div class="alert alert-danger mt-3">
+            @ViewBag.Hata
+        </div>
+    }
+</form>

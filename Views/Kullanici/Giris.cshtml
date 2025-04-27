@@ -1,0 +1,28 @@
+﻿@model FreelanceTakipSistemi.Models.GirisViewModel
+
+@{
+    ViewData["Title"] = "Kullanıcı Girişi";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<form asp-action="Giris" method="post">
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">E-posta</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Parola" class="form-label">Parola</label>
+        <input asp-for="Parola" type="password" class="form-control" />
+        <span asp-validation-for="Parola" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Giriş Yap</button>
+
+    @if (ViewBag.Hata != null)
+    {
+        <div class="text-danger mt-3">@ViewBag.Hata</div>
+    }
+</form>

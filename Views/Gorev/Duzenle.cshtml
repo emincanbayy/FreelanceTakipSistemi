@@ -1,0 +1,35 @@
+﻿@model FreelanceTakipSistemi.Models.Gorev
+@{
+    ViewData["Title"] = "Görev Düzenle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">✏️ Görev Düzenle</h2>
+
+<form asp-action="Duzenle" method="post">
+    <input type="hidden" asp-for="GorevId" />
+    <input type="hidden" asp-for="ProjeId" />
+
+    <div class="mb-3">
+        <label asp-for="Baslik" class="form-label">Başlık</label>
+        <input asp-for="Baslik" class="form-control" />
+        <span asp-validation-for="Baslik" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Aciklama" class="form-label">Açıklama</label>
+        <textarea asp-for="Aciklama" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Durum" class="form-label">Durum</label>
+        <select asp-for="Durum" class="form-select">
+            <option>Yapılacak</option>
+            <option>Devam Ediyor</option>
+            <option>Yapıldı</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Güncelle</button>
+    <a asp-action="Index" asp-route-projeId="@Model.ProjeId" class="btn btn-secondary">Geri</a>
+</form>

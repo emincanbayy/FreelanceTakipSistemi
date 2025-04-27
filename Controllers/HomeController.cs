@@ -1,32 +1,25 @@
-using System.Diagnostics;
-using FreelanceTakipSistemi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FreelanceTakipSistemi.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
+        // Giriþ yapmýþ kullanýcýlar için ana sayfa
+        [Authorize]
         public IActionResult Index()
         {
-            return View();
+            // Burada kullanýcýnýn bilgilerini çekebiliriz (Claimlerden)
+            var kullaniciIsmi = User.Identity.Name;  // Kullanýcýnýn ismi, Claim üzerinden alýnýyor
+
+            ViewBag.KullaniciIsmi = kullaniciIsmi;  // Kullanýcý ismini View'da göstermek için
+
+            return View();  // Ana sayfa görünümünü döndürüyoruz
         }
 
         public IActionResult Privacy()
         {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();  // Gizlilik sözleþmesi gibi sayfalar için
         }
     }
 }

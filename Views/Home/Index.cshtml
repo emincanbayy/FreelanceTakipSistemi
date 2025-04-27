@@ -1,8 +1,86 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <h2>@ViewData["Title"]</h2>
+            <p class="lead">Hoşgeldiniz, <strong>@ViewBag.KullaniciIsmi</strong></p>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">Proje ve Görevleriniz</h3>
+                </div>
+                <div class="card-body">
+                    <p>Burada projeleriniz ve görevleriniz listelenecek. Herhangi bir işlem yapmadan önce projelerinizi kontrol edin.</p>
+
+                    <!-- Proje ve görevler listelenebilir (Bu kısım veritabanından çekilecek) -->
+                    <ul class="list-group">
+                        <!-- Bu bir örnek, dinamik olarak veritabanından projeler çekilebilir -->
+                        <li class="list-group-item">
+                            <strong>Proje Adı:</strong> Örnek Proje 1
+                            <span class="badge bg-success float-end">Devam Ediyor</span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Proje Adı:</strong> Örnek Proje 2
+                            <span class="badge bg-danger float-end">Beklemede</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Görevler Bölümü -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Görevleriniz</h3>
+                </div>
+                <div class="card-body">
+                    <p>Burada görevlerinizi takip edebilir, tamamlananlar veya bekleyenler arasında geçiş yapabilirsiniz.</p>
+
+                    <ul class="list-group">
+                        <!-- Bu bir örnek, dinamik olarak veritabanından görevler çekilebilir -->
+                        <li class="list-group-item">
+                            <strong>Görev Adı:</strong> Tasarım Yap
+                            <span class="badge bg-warning float-end">Beklemede</span>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Görev Adı:</strong> Yazılım Geliştirme
+                            <span class="badge bg-primary float-end">Tamamlandı</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Sidebar (Opsiyonel) -->
+        <div class="col-lg-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title">Hızlı Erişim</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="/Proje/Yeni">Yeni Proje Ekle</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="/Gorev/Yeni">Yeni Görev Ekle</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="/Kullanici/Cikis">Çıkış Yap</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Duyuru veya bildirim bölümü -->
+@if (ViewBag.Duyuru != null)
+{
+    <div class="alert alert-info" role="alert">
+        @ViewBag.Duyuru
+    </div>
+}

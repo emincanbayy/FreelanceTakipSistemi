@@ -1,0 +1,58 @@
+﻿@model FreelanceTakipSistemi.Models.Proje
+
+@{
+    ViewData["Title"] = "Yeni Proje Ekle";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<!-- Başarı mesajı için kullanıcıya bildirim -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<!-- Hata mesajı için kullanıcıya bildirim -->
+@if (ViewBag.Hata != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.Hata
+    </div>
+}
+
+<!-- Proje ekleme formu -->
+<form asp-action="Yeni" method="post">
+    @Html.AntiForgeryToken() <!-- CSRF koruma için AntiForgeryToken ekliyoruz -->
+
+    <div class="mb-3">
+        <label asp-for="ProjeAdi" class="form-label">Proje Adı</label>
+        <input asp-for="ProjeAdi" class="form-control" placeholder="Proje adını girin" required />
+        <span asp-validation-for="ProjeAdi" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Aciklama" class="form-label">Açıklama</label>
+        <textarea asp-for="Aciklama" class="form-control" placeholder="Proje açıklamasını girin" rows="4" required></textarea>
+        <span asp-validation-for="Aciklama" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Durum" class="form-label">Durum</label>
+        <select asp-for="Durum" class="form-control" required>
+            <option value="Aktif">Aktif</option>
+            <option value="Tamamlandı">Tamamlandı</option>
+        </select>
+        <span asp-validation-for="Durum" class="text-danger"></span>
+    </div>
+
+    <!-- Formu gönder butonu -->
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a href="@Url.Action("Index", "Proje")" class="btn btn-secondary ml-2">İptal</a>
+</form>
+
+<!-- JavaScript ile Validation mesajlarını göstermek için -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
