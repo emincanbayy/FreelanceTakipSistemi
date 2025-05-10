@@ -1,86 +1,109 @@
 ﻿@{
-    ViewData["Title"] = "Ana Sayfa";
+    ViewData["Title"] = "Anasayfa";
+    Layout = "_Layout";
 }
 
-<div class="container my-5">
-    <div class="row">
-        <div class="col-lg-8">
-            <h2>@ViewData["Title"]</h2>
-            <p class="lead">Hoşgeldiniz, <strong>@ViewBag.KullaniciIsmi</strong></p>
+@section Styles {
+    <style>
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+            color: #fff;
+            padding: 5rem 0;
+        }
 
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3 class="card-title">Proje ve Görevleriniz</h3>
-                </div>
-                <div class="card-body">
-                    <p>Burada projeleriniz ve görevleriniz listelenecek. Herhangi bir işlem yapmadan önce projelerinizi kontrol edin.</p>
+            .hero .btn {
+                border-radius: 50px;
+                padding: 0.75rem 2rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                transition: transform .2s, box-shadow .2s;
+            }
 
-                    <!-- Proje ve görevler listelenebilir (Bu kısım veritabanından çekilecek) -->
-                    <ul class="list-group">
-                        <!-- Bu bir örnek, dinamik olarak veritabanından projeler çekilebilir -->
-                        <li class="list-group-item">
-                            <strong>Proje Adı:</strong> Örnek Proje 1
-                            <span class="badge bg-success float-end">Devam Ediyor</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Proje Adı:</strong> Örnek Proje 2
-                            <span class="badge bg-danger float-end">Beklemede</span>
-                        </li>
-                    </ul>
+                .hero .btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+                }
+
+        /* Feature cards */
+        .feature-card {
+            transition: transform .3s, box-shadow .3s;
+            border: none;
+            border-radius: .75rem;
+        }
+
+            .feature-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 0.75rem 2rem rgba(0,0,0,0.15);
+            }
+
+        /* Footer */
+        footer {
+            background: #1a1a1a;
+        }
+    </style>
+}
+
+<!-- HERO -->
+<section class="hero text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Freelance Takip Sistemi</h1>
+        <p class="lead mb-4">Projelerinizi ve görevlerinizi tek bir noktadan yönetin. Verimliliğinizi artırın, zamanınızı en iyi şekilde kullanın.</p>
+        <a asp-controller="Proje" asp-action="Index" class="btn btn-light btn-lg me-2">
+            <i class="bi bi-folder2-open me-1"></i>Projeleri Görüntüle
+        </a>
+        <a asp-controller="Gorev" asp-action="Index" class="btn btn-outline-light btn-lg">
+            <i class="bi bi-list-check me-1"></i>Görevleri Yönet
+        </a>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card feature-card shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-kanban-fill display-4 text-primary mb-3"></i>
+                        <h5 class="card-title fw-bold">Projeler</h5>
+                        <p class="card-text text-muted">Tüm projelerinizi gözden geçirin, yeni projeler ekleyin veya mevcut projeleri güncelleyin.</p>
+                        <a asp-controller="Proje" asp-action="Index" class="btn btn-primary rounded-pill px-4">
+                            Devam Et
+                        </a>
+                    </div>
                 </div>
             </div>
-
-            <!-- Görevler Bölümü -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Görevleriniz</h3>
-                </div>
-                <div class="card-body">
-                    <p>Burada görevlerinizi takip edebilir, tamamlananlar veya bekleyenler arasında geçiş yapabilirsiniz.</p>
-
-                    <ul class="list-group">
-                        <!-- Bu bir örnek, dinamik olarak veritabanından görevler çekilebilir -->
-                        <li class="list-group-item">
-                            <strong>Görev Adı:</strong> Tasarım Yap
-                            <span class="badge bg-warning float-end">Beklemede</span>
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Görev Adı:</strong> Yazılım Geliştirme
-                            <span class="badge bg-primary float-end">Tamamlandı</span>
-                        </li>
-                    </ul>
+            <div class="col-md-4">
+                <div class="card feature-card shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-tasks-fill display-4 text-success mb-3"></i>
+                        <h5 class="card-title fw-bold">Görevler</h5>
+                        <p class="card-text text-muted">Görevlerinizi planlayın, durumlarını güncelleyin ve bitiş tarihlerini takip edin.</p>
+                        <a asp-controller="Gorev" asp-action="Index" class="btn btn-success rounded-pill px-4">
+                            Devam Et
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Sağ Sidebar (Opsiyonel) -->
-        <div class="col-lg-4">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h3 class="card-title">Hızlı Erişim</h3>
-                </div>
-                <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <a href="/Proje/Yeni">Yeni Proje Ekle</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="/Gorev/Yeni">Yeni Görev Ekle</a>
-                        </li>
-                        <li class="list-group-item">
-                            <a href="/Kullanici/Cikis">Çıkış Yap</a>
-                        </li>
-                    </ul>
+            <div class="col-md-4">
+                <div class="card feature-card shadow-sm h-100">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-chat-dots-fill display-4 text-info mb-3"></i>
+                        <h5 class="card-title fw-bold">Yorumlar</h5>
+                        <p class="card-text text-muted">Ekip üyelerinin yorumlarını inceleyin ve geri bildirimde bulunun.</p>
+                        <a asp-controller="Yorum" asp-action="Index" class="btn btn-info rounded-pill px-4">
+                            Devam Et
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Duyuru veya bildirim bölümü -->
-@if (ViewBag.Duyuru != null)
-{
-    <div class="alert alert-info" role="alert">
-        @ViewBag.Duyuru
+<!-- FOOTER -->
+<footer class="text-center text-light py-3">
+    <div class="container">
+        <small>© @DateTime.Now.Year Freelance Takip Sistemi. Tüm hakları saklıdır.</small>
     </div>
-}
+</footer>

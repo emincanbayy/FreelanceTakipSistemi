@@ -1,109 +1,134 @@
-﻿using FreelanceTakipSistemi.Data;
+﻿using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using FreelanceTakipSistemi.Data;
 using FreelanceTakipSistemi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FreelanceTakipSistemi.Controllers
 {
+    [Authorize]  // Tüm Proje işlemleri için giriş yapılmış olmalı
     public class ProjeController : Controller
     {
         private readonly AppDbContext _context;
 
-        // Constructor: Veritabanı bağlantısını alıyoruz
         public ProjeController(AppDbContext context)
         {
-            _context = context;  // DbContext üzerinden veritabanına erişim sağlıyoruz
+            _context = context;
         }
 
-        // GET: /Proje/Index
+        // GET: /Proje
         public async Task<IActionResult> Index()
         {
-            // Veritabanından projeleri çekiyoruz
-            var projeler = await _context.Projeler.ToListAsync();
-            return View(projeler); // Veritabanındaki projeleri View'a gönderiyoruz
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var sorgu = _context.Projeler.Include(p => p.Kullanici).AsQueryable();
+
+            // Admin değilse sadece kendi projelerini görsün
+            if (!User.IsInRole("Admin"))
+                sorgu = sorgu.Where(p => p.KullaniciId == userId);
+
+            var model = await sorgu.ToListAsync();
+            return View(model);
         }
 
-        // GET: /Proje/Yeni
-        public IActionResult Yeni()
+        // GET: /Proje/Create
+        public IActionResult Create()
         {
-            return View(); // Yeni proje eklemek için boş formu gösteriyoruz
+            return View(new Proje());
         }
 
-        // POST: /Proje/Yeni
-        [HttpPost]
-        [ValidateAntiForgeryToken] // CSRF koruması
-        public async Task<IActionResult> Yeni(Proje proje)
+        // POST: /Proje/Create
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Proje model)
         {
-            if (ModelState.IsValid)
+            // Oturum açmış kullanıcının ID'sini atıyoruz
+            model.KullaniciId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            // Navigation property'lerine ait validation hatalarını kaldır:
+            ModelState.Remove(nameof(model.Kullanici));
+            ModelState.Remove(nameof(model.Gorevler));
+
+            if (!ModelState.IsValid)
             {
-                _context.Projeler.Add(proje); // Veritabanına proje ekliyoruz
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Proje başarıyla eklendi."; // Başarı mesajı
-                return RedirectToAction("Index"); // Projeler listesine yönlendir
+                // Hata varsa formu tekrar göster
+                return View(model);
             }
 
-            // Model geçersizse, kullanıcıya hata mesajı gösteriyoruz
+            _context.Projeler.Add(model);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: /Proje/Edit/5
+        public async Task<IActionResult> Edit(int id)
+        {
+            var proje = await _context.Projeler.FindAsync(id);
+            if (proje == null) return NotFound();
+
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if (!User.IsInRole("Admin") && proje.KullaniciId != userId)
+                return Forbid();
+
             return View(proje);
         }
 
-        // GET: /Proje/Duzenle/{id}
-        public async Task<IActionResult> Duzenle(int id)
+        // POST: /Proje/Edit/5
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Proje model)
         {
-            // ID'ye göre proje verisini alıyoruz
-            var proje = await _context.Projeler.FindAsync(id);
-            if (proje == null)
-            {
-                return NotFound(); // Proje bulunamazsa 404 döndürüyoruz
-            }
+            if (id != model.ProjeId)
+                return BadRequest();
 
-            return View(proje); // Projeyi düzenlemek için formu gönderiyoruz
-        }
+            // Navigation hatalarını temizle
+            ModelState.Remove(nameof(model.Kullanici));
+            ModelState.Remove(nameof(model.Gorevler));
 
-        // POST: /Proje/Duzenle/{id}
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Duzenle(int id, Proje proje)
-        {
-            if (id != proje.ProjeId)
-            {
-                return NotFound(); // ID uyuşmazsa 404 döndürüyoruz
-            }
+            if (!ModelState.IsValid)
+                return View(model);
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(proje); // Veritabanındaki projeyi güncelliyoruz
-                    await _context.SaveChangesAsync();
-                    TempData["SuccessMessage"] = "Proje başarıyla güncellendi."; // Başarı mesajı
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Projeler.Any(e => e.ProjeId == id))
-                    {
-                        return NotFound(); // Eğer proje bulunmazsa 404 döndürüyoruz
-                    }
-                    throw; // Diğer hatalar için
-                }
-                return RedirectToAction("Index"); // Güncellenen projeyi listeliyoruz
-            }
+            var mevcut = await _context.Projeler
+                                       .AsNoTracking()
+                                       .FirstOrDefaultAsync(p => p.ProjeId == id);
+            if (mevcut == null) return NotFound();
 
-            return View(proje); // Model geçersizse formu yeniden gösteriyoruz
-        }
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if (!User.IsInRole("Admin") && mevcut.KullaniciId != userId)
+                return Forbid();
 
-        // GET: /Proje/Sil/{id}
-        public async Task<IActionResult> Sil(int id)
-        {
-            var proje = await _context.Projeler.FindAsync(id);
-            if (proje == null)
-            {
-                return NotFound(); // Eğer proje bulunamazsa 404 döndürüyoruz
-            }
+            // Sahip bilgisini koru
+            model.KullaniciId = mevcut.KullaniciId;
 
-            _context.Projeler.Remove(proje); // Projeyi veritabanından siliyoruz
+            _context.Projeler.Update(model);
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Proje başarıyla silindi."; // Başarı mesajı
-            return RedirectToAction("Index"); // Projeler listesine yönlendiriyoruz
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: /Proje/Delete/5
+        public async Task<IActionResult> Delete(int id)
+        {
+            var proje = await _context.Projeler.FindAsync(id);
+            if (proje == null) return NotFound();
+
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            if (!User.IsInRole("Admin") && proje.KullaniciId != userId)
+                return Forbid();
+
+            return View(proje);
+        }
+
+        // POST: /Proje/Delete/5
+        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var proje = await _context.Projeler.FindAsync(id);
+            if (proje != null)
+            {
+                _context.Projeler.Remove(proje);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }

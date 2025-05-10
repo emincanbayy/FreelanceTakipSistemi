@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace FreelanceTakipSistemi.Models
@@ -7,17 +8,19 @@ namespace FreelanceTakipSistemi.Models
         [Key]
         public int KullaniciId { get; set; }
 
-        [Required(ErrorMessage = "Ýsim alaný zorunludur.")]
+        [Required(ErrorMessage = "Ýsim zorunludur.")]
         public string Isim { get; set; }
 
-        [Required(ErrorMessage = "E-posta alaný zorunludur."), EmailAddress]
+        [Required, EmailAddress]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Parola alaný zorunludur.")]
+        [Required, DataType(DataType.Password)]
         public string Parola { get; set; }
 
+        // Rol: Admin veya Kullanici
         public string Rol { get; set; } = "Kullanici";
 
+        // Ýliþkili projeler
         public ICollection<Proje> Projeler { get; set; }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FreelanceTakipSistemi.Migrations
 {
     /// <inheritdoc />
-    public partial class IlkOlusturma : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,10 +33,10 @@ namespace FreelanceTakipSistemi.Migrations
                 {
                     ProjeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ProjeAdi = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Baslik = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BaslangicTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BitisTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    BitisTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
                     KullaniciId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -56,11 +56,13 @@ namespace FreelanceTakipSistemi.Migrations
                 {
                     GorevId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Baslik = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Durum = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Baslik = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    Durum = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     OlusturulmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProjeId = table.Column<int>(type: "int", nullable: false)
+                    BitisTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProjeId = table.Column<int>(type: "int", nullable: false),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {

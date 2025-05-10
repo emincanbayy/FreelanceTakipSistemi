@@ -1,29 +1,58 @@
-﻿@model FreelanceTakipSistemi.Models.Kullanici
+﻿@model FreelanceTakipSistemi.Models.KullaniciRegisterViewModel
 
 @{
-    ViewData["Title"] = "Kullanıcı Kaydı";
+    ViewData["Title"] = "Kayıt Ol";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <h2 class="mb-4 text-center">@ViewData["Title"]</h2>
 
-<form asp-action="Kayit" method="post">
-    <div class="mb-3">
-        <label asp-for="Isim" class="form-label">İsim</label>
-        <input asp-for="Isim" class="form-control" />
-        <span asp-validation-for="Isim" class="text-danger"></span>
+        @* Kayıt başarılıysa mesaj göster *@
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
+            </div>
+        }
+
+        <form asp-action="Kayit" method="post" novalidate>
+            @* Genel validation özetini göster *@
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Isim" class="form-label">İsim</label>
+                <input asp-for="Isim" class="form-control" placeholder="Adınızı giriniz" />
+                <span asp-validation-for="Isim" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label">E-posta</label>
+                <input asp-for="Email" class="form-control" placeholder="E-posta adresinizi giriniz" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Parola" class="form-label">Parola</label>
+                <input asp-for="Parola" type="password" class="form-control" placeholder="Parolanızı belirleyin" />
+                <span asp-validation-for="Parola" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ParolaTekrar" class="form-label">Parola (Tekrar)</label>
+                <input asp-for="ParolaTekrar" type="password" class="form-control" placeholder="Parolanızı tekrar giriniz" />
+                <span asp-validation-for="ParolaTekrar" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <button type="submit" class="btn btn-success">Kayıt Ol</button>
+                <a asp-action="Giris" class="text-decoration-none">Zaten hesabın var mı? Giriş Yap</a>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label">E-posta</label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Parola" class="form-label">Parola</label>
-        <input asp-for="Parola" class="form-control" type="password" />
-        <span asp-validation-for="Parola" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-success">Kayıt Ol</button>
-</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreelanceTakipSistemi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250425072514_AddDurumToGorevFixed")]
-    partial class AddDurumToGorevFixed
+    [Migration("20250510095528_UpdateModels")]
+    partial class UpdateModels
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,21 +35,33 @@ namespace FreelanceTakipSistemi.Migrations
 
                     b.Property<string>("Aciklama")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Baslik")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("BitisTarihi")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Durum")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("OlusturulmaTarihi")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ProjeId")
                         .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.HasKey("GorevId");
 
@@ -102,19 +114,15 @@ namespace FreelanceTakipSistemi.Migrations
                     b.Property<DateTime>("BaslangicTarihi")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("BitisTarihi")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Durum")
+                    b.Property<string>("Baslik")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("BitisTarihi")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("KullaniciId")
                         .HasColumnType("int");
-
-                    b.Property<string>("ProjeAdi")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ProjeId");
 

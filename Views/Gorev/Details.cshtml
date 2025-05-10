@@ -1,0 +1,51 @@
+﻿@model FreelanceTakipSistemi.Models.Gorev
+@{
+    ViewData["Title"] = "Görev Detay";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="mb-3"><strong>Proje:</strong> @Model.Proje.Baslik</div>
+<div class="mb-3"><strong>Başlık:</strong> @Model.Baslik</div>
+<div class="mb-3"><strong>Açıklama:</strong> @Model.Aciklama</div>
+<div class="mb-3"><strong>Durum:</strong> @Model.Durum</div>
+
+<hr />
+
+<h4>Yorumlar</h4>
+@* Yeni yorum formu *@
+<form asp-controller="Yorum" asp-action="Create" method="post" class="mb-4">
+    <input type="hidden" asp-for="GorevId" value="@Model.GorevId" />
+    <div class="mb-3">
+        <textarea name="Icerik" class="form-control" placeholder="Yorumunuzu girin…" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Yorumu Ekle</button>
+</form>
+
+@* Mevcut yorumlar *@
+@if (Model.Yorumlar.Any())
+{
+    <ul class="list-group">
+        @foreach (var y in Model.Yorumlar.OrderByDescending(x => x.OlusturulmaTarihi))
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div>
+                    <small class="text-muted">@y.OlusturulmaTarihi.ToString("g")</small><br />
+                    @y.Icerik
+                </div>
+                <form asp-controller="Yorum" asp-action="Delete" method="post">
+                    <input type="hidden" name="id" value="@y.YorumId" />
+                    <input type="hidden" name="gorevId" value="@Model.GorevId" />
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                </form>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p class="text-muted">Henüz yorum yok.</p>
+}
+
+<hr />
+<a asp-action="Index" class="btn btn-secondary">Geri Dön</a>

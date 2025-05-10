@@ -1,0 +1,37 @@
+﻿@model FreelanceTakipSistemi.Models.Proje
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Yeni Proje Ekle";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create" method="post" novalidate>
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+    @* Zorunlu foreign-key alanlarını gizli input olarak gönderiyoruz *@
+    <input asp-for="KullaniciId"
+           type="hidden"
+           value="@User.FindFirst(ClaimTypes.NameIdentifier).Value" />
+    <input type="hidden" name="Gorevler" value="" />
+
+    <div class="mb-3">
+        <label asp-for="Baslik" class="form-label">Başlık</label>
+        <input asp-for="Baslik" class="form-control" />
+        <span asp-validation-for="Baslik" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Aciklama" class="form-label">Açıklama</label>
+        <textarea asp-for="Aciklama" class="form-control"></textarea>
+        <span asp-validation-for="Aciklama" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Kaydet</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

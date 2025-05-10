@@ -1,0 +1,14 @@
+﻿@model FreelanceTakipSistemi.Models.Proje
+@{
+    ViewData["Title"] = "Proje Sil";
+}
+<h2>@ViewData["Title"]</h2>
+<div class="alert alert-danger">
+    Bu projeyi silmek istediğinize emin misiniz?
+    <strong>@Model.Baslik</strong>
+</div>
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="ProjeId" />
+    <button type="submit" class="btn btn-danger">Sil</button>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+</form>

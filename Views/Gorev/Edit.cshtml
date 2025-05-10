@@ -1,0 +1,43 @@
+﻿@model FreelanceTakipSistemi.Models.Gorev
+@{
+    ViewData["Title"] = "Görev Düzenle";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="GorevId" />
+    <input type="hidden" asp-for="RowVersion" />
+
+    <div class="mb-3">
+        <label asp-for="Baslik" class="form-label"></label>
+        <input asp-for="Baslik" class="form-control" />
+        <span asp-validation-for="Baslik" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Aciklama" class="form-label"></label>
+        <textarea asp-for="Aciklama" class="form-control"></textarea>
+        <span asp-validation-for="Aciklama" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Durum" class="form-label"></label>
+        <input asp-for="Durum" class="form-control" />
+        <span asp-validation-for="Durum" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="BitisTarihi" class="form-label"></label>
+        <input asp-for="BitisTarihi" type="date" class="form-control" />
+        <span asp-validation-for="BitisTarihi" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Geri</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+""
