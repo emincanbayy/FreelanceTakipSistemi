@@ -1,5 +1,4 @@
 ﻿@model FreelanceTakipSistemi.Models.Gorev
-
 @{
     ViewData["Title"] = "Görev Sil";
 }
@@ -7,30 +6,28 @@
 <h2>@ViewData["Title"]</h2>
 <h4>“@Model.Baslik” başlıklı görevi silmek istediğinize emin misiniz?</h4>
 
-<div class="border p-3 mb-3">
-    <dl class="row">
-        <dt class="col-sm-2">Açıklama</dt>
-        <dd class="col-sm-10">@Model.Aciklama</dd>
-
-        <dt class="col-sm-2">Durum</dt>
-        <dd class="col-sm-10">@Model.Durum</dd>
-
-        <dt class="col-sm-2">Oluşturulma</dt>
-        <dd class="col-sm-10">@Model.OlusturulmaTarihi.ToString("dd.MM.yyyy HH:mm")</dd>
-
-        @if (Model.BitisTarihi.HasValue)
-        {
-            <dt class="col-sm-2">Bitiş Tarihi</dt>
-            <dd class="col-sm-10">@Model.BitisTarihi.Value.ToString("dd.MM.yyyy")</dd>
-        }
-    </dl>
-</div>
-
 <form asp-action="Delete" method="post">
     @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="GorevId" />
+    <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="RowVersion" />
 
+    <div class="form-group">
+        <label>Açıklama</label>
+        <p>@Model.Aciklama</p>
+    </div>
+    <div class="form-group">
+        <label>Durum</label>
+        <p>@Model.Durum</p>
+    </div>
+    <div class="form-group">
+        <label>Oluşturulma Tarihi</label>
+        <p>@Model.OlusturmaTarihi:dd.MM.yyyy HH:mm</p>
+    </div>
+    <div class="form-group">
+        <label>Teslim Tarihi</label>
+        <p>@Model.TeslimTarihi?.ToString("dd.MM.yyyy")</p>
+    </div>
+
     <button type="submit" class="btn btn-danger">Sil</button>
-    <a asp-action="Index" class="btn btn-secondary ms-2">İptal</a>
+    <a asp-action="Index" class="btn btn-secondary">İptal</a>
 </form>

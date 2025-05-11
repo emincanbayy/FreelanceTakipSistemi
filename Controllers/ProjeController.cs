@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FreelanceTakipSistemi.Data;
@@ -9,7 +10,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FreelanceTakipSistemi.Controllers
 {
-    [Authorize]  // Tüm Proje işlemleri için giriş yapılmış olmalı
+    /// <summary>
+    /// Proje yönetimi için CRUD işlemlerini sağlar.
+    /// </summary>
+    [Authorize]  // Proje işlemleri için kullanıcı girişi zorunlu
     public class ProjeController : Controller
     {
         private readonly AppDbContext _context;
@@ -19,53 +23,75 @@ namespace FreelanceTakipSistemi.Controllers
             _context = context;
         }
 
-        // GET: /Proje
+        /// <summary>
+        /// Giriş yapmış kullanıcının (veya adminin tüm) projelerini listeler.
+        /// </summary>
         public async Task<IActionResult> Index()
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var sorgu = _context.Projeler.Include(p => p.Kullanici).AsQueryable();
+            var sorgu = _context.Projeler
+                                .Include(p => p.Kullanici)
+                                .AsNoTracking();
 
-            // Admin değilse sadece kendi projelerini görsün
             if (!User.IsInRole("Admin"))
                 sorgu = sorgu.Where(p => p.KullaniciId == userId);
 
-            var model = await sorgu.ToListAsync();
+            var model = await sorgu
+                .OrderByDescending(p => p.BaslangicTarihi)
+                .ToListAsync();
+
             return View(model);
         }
 
-        // GET: /Proje/Create
+        /// <summary>
+        /// Yeni proje oluşturma formunu getirir.
+        /// </summary>
         public IActionResult Create()
         {
             return View(new Proje());
         }
 
-        // POST: /Proje/Create
+        /// <summary>
+        /// Yeni projeyi veritabanına ekler.
+        /// </summary>
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Proje model)
         {
-            // Oturum açmış kullanıcının ID'sini atıyoruz
+            // Oturum açmış kullanıcının ID'sini ata
             model.KullaniciId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            // Navigation property'lerine ait validation hatalarını kaldır:
+            // Navigation property validasyon hatalarını temizle
             ModelState.Remove(nameof(model.Kullanici));
             ModelState.Remove(nameof(model.Gorevler));
 
             if (!ModelState.IsValid)
+                return View(model);
+
+            try
             {
-                // Hata varsa formu tekrar göster
+                _context.Projeler.Add(model);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                // InnerException mesajı, eksik veya hatalı sütun bilgisini içerir
+                var error = ex.InnerException?.Message ?? ex.Message;
+                ModelState.AddModelError(string.Empty, $"Veritabanı hatası: {error}");
                 return View(model);
             }
-
-            _context.Projeler.Add(model);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Proje/Edit/5
+        /// <summary>
+        /// Var olan bir projeyi düzenleme formunu getirir.
+        /// </summary>
         public async Task<IActionResult> Edit(int id)
         {
-            var proje = await _context.Projeler.FindAsync(id);
-            if (proje == null) return NotFound();
+            var proje = await _context.Projeler
+                                     .AsNoTracking()
+                                     .FirstOrDefaultAsync(p => p.ProjeId == id);
+            if (proje == null)
+                return NotFound();
 
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             if (!User.IsInRole("Admin") && proje.KullaniciId != userId)
@@ -74,14 +100,16 @@ namespace FreelanceTakipSistemi.Controllers
             return View(proje);
         }
 
-        // POST: /Proje/Edit/5
+        /// <summary>
+        /// Düzenlenen projeyi günceller.
+        /// </summary>
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Proje model)
         {
             if (id != model.ProjeId)
                 return BadRequest();
 
-            // Navigation hatalarını temizle
+            // Navigation property validasyon hatalarını temizle
             ModelState.Remove(nameof(model.Kullanici));
             ModelState.Remove(nameof(model.Gorevler));
 
@@ -91,25 +119,40 @@ namespace FreelanceTakipSistemi.Controllers
             var mevcut = await _context.Projeler
                                        .AsNoTracking()
                                        .FirstOrDefaultAsync(p => p.ProjeId == id);
-            if (mevcut == null) return NotFound();
+            if (mevcut == null)
+                return NotFound();
 
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             if (!User.IsInRole("Admin") && mevcut.KullaniciId != userId)
                 return Forbid();
 
-            // Sahip bilgisini koru
+            // Sahibiyi koru
             model.KullaniciId = mevcut.KullaniciId;
 
-            _context.Projeler.Update(model);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _context.Projeler.Update(model);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException ex)
+            {
+                var error = ex.InnerException?.Message ?? ex.Message;
+                ModelState.AddModelError(string.Empty, $"Veritabanı hatası: {error}");
+                return View(model);
+            }
         }
 
-        // GET: /Proje/Delete/5
+        /// <summary>
+        /// Proje silme onay formunu getirir.
+        /// </summary>
         public async Task<IActionResult> Delete(int id)
         {
-            var proje = await _context.Projeler.FindAsync(id);
-            if (proje == null) return NotFound();
+            var proje = await _context.Projeler
+                                     .AsNoTracking()
+                                     .FirstOrDefaultAsync(p => p.ProjeId == id);
+            if (proje == null)
+                return NotFound();
 
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             if (!User.IsInRole("Admin") && proje.KullaniciId != userId)
@@ -118,16 +161,28 @@ namespace FreelanceTakipSistemi.Controllers
             return View(proje);
         }
 
-        // POST: /Proje/Delete/5
+        /// <summary>
+        /// Onaylanan projeyi siler.
+        /// </summary>
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var proje = await _context.Projeler.FindAsync(id);
-            if (proje != null)
+            if (proje == null)
+                return RedirectToAction(nameof(Index));
+
+            try
             {
                 _context.Projeler.Remove(proje);
                 await _context.SaveChangesAsync();
             }
+            catch (DbUpdateException ex)
+            {
+                var error = ex.InnerException?.Message ?? ex.Message;
+                ModelState.AddModelError(string.Empty, $"Veritabanı hatası: {error}");
+                return View(proje);
+            }
+
             return RedirectToAction(nameof(Index));
         }
     }

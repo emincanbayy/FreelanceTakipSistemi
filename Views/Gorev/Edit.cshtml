@@ -1,43 +1,74 @@
 ﻿@model FreelanceTakipSistemi.Models.Gorev
+
 @{
     ViewData["Title"] = "Görev Düzenle";
+    Layout = "_Layout";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container py-4">
+    <h2>@ViewData["Title"]</h2>
 
-<form asp-action="Edit" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="GorevId" />
-    <input type="hidden" asp-for="RowVersion" />
+    <form asp-action="Edit" method="post" novalidate>
+        @Html.AntiForgeryToken()
 
-    <div class="mb-3">
-        <label asp-for="Baslik" class="form-label"></label>
-        <input asp-for="Baslik" class="form-control" />
-        <span asp-validation-for="Baslik" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Aciklama" class="form-label"></label>
-        <textarea asp-for="Aciklama" class="form-control"></textarea>
-        <span asp-validation-for="Aciklama" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Durum" class="form-label"></label>
-        <input asp-for="Durum" class="form-control" />
-        <span asp-validation-for="Durum" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="BitisTarihi" class="form-label"></label>
-        <input asp-for="BitisTarihi" type="date" class="form-control" />
-        <span asp-validation-for="BitisTarihi" class="text-danger"></span>
-    </div>
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="RowVersion" />
 
-    <button type="submit" class="btn btn-primary">Kaydet</button>
-    <a asp-action="Index" class="btn btn-secondary ms-2">Geri</a>
-</form>
+        <div class="mb-3">
+            <label asp-for="ProjeId" class="form-label">Proje Seç</label>
+            <select asp-for="ProjeId"
+                    class="form-select"
+                    asp-items="ViewBag.ProjeList">
+                <option value="">-- Proje Seçin --</option>
+            </select>
+            <span asp-validation-for="ProjeId" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Baslik" class="form-label">Başlık</label>
+            <input asp-for="Baslik" class="form-control" placeholder="Görev başlığını girin" />
+            <span asp-validation-for="Baslik" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Aciklama" class="form-label">Açıklama</label>
+            <textarea asp-for="Aciklama" class="form-control" rows="4" placeholder="Görev detaylarını girin"></textarea>
+            <span asp-validation-for="Aciklama" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Durum" class="form-label">Durum</label>
+            <select asp-for="Durum" class="form-select">
+                <option value="">-- Durum Seçin --</option>
+                <option value="Yapılacak">Yapılacak</option>
+                <option value="Devam Ediyor">Devam Ediyor</option>
+                <option value="Tamamlandı">Tamamlandı</option>
+            </select>
+            <span asp-validation-for="Durum" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="TeslimTarihi" class="form-label">Teslim Tarihi</label>
+            <input asp-for="TeslimTarihi" type="date" class="form-control" />
+            <span asp-validation-for="TeslimTarihi" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Oncelik" class="form-label">Öncelik</label>
+            <select asp-for="Oncelik" class="form-select">
+                <option value="">-- Öncelik Seçin --</option>
+                <option value="Düşük">Düşük</option>
+                <option value="Orta">Orta</option>
+                <option value="Yüksek">Yüksek</option>
+            </select>
+            <span asp-validation-for="Oncelik" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Güncelle</button>
+        <a asp-action="Index" class="btn btn-secondary ms-2">Geri Dön</a>
+    </form>
+</div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }
-""

@@ -33,8 +33,8 @@ namespace FreelanceTakipSistemi.Migrations
                 {
                     ProjeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Baslik = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Aciklama = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Baslik = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     BaslangicTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
                     BitisTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
                     KullaniciId = table.Column<int>(type: "int", nullable: false)
@@ -54,19 +54,20 @@ namespace FreelanceTakipSistemi.Migrations
                 name: "Gorevler",
                 columns: table => new
                 {
-                    GorevId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Baslik = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Aciklama = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    Durum = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    OlusturulmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BitisTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Baslik = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Aciklama = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
                     ProjeId = table.Column<int>(type: "int", nullable: false),
+                    OlusturmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TeslimTarihi = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Durum = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Oncelik = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Gorevler", x => x.GorevId);
+                    table.PrimaryKey("PK_Gorevler", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Gorevler_Projeler_ProjeId",
                         column: x => x.ProjeId,
@@ -79,20 +80,21 @@ namespace FreelanceTakipSistemi.Migrations
                 name: "Yorumlar",
                 columns: table => new
                 {
-                    YorumId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Icerik = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OlusturulmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    GorevId = table.Column<int>(type: "int", nullable: false)
+                    GorevId = table.Column<int>(type: "int", nullable: false),
+                    Icerik = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    KullaniciAdi = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OlusturmaTarihi = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Yorumlar", x => x.YorumId);
+                    table.PrimaryKey("PK_Yorumlar", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Yorumlar_Gorevler_GorevId",
                         column: x => x.GorevId,
                         principalTable: "Gorevler",
-                        principalColumn: "GorevId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 

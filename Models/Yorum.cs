@@ -1,27 +1,27 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FreelanceTakipSistemi.Models
 {
-    /// <summary>
-    /// Görevle iliþkilendirilen yorumlarý temsil eder.
-    /// </summary>
     public class Yorum
     {
         [Key]
-        public int YorumId { get; set; }
+        public int Id { get; set; }
 
-        [Required(ErrorMessage = "Yorum içeriði zorunludur.")]
+        [Required]
+        public int GorevId { get; set; }
+
+        [ForeignKey(nameof(GorevId))]
+        public Gorev Gorev { get; set; }
+
+        [Required, StringLength(500)]
         public string Icerik { get; set; }
 
-        /// <summary>
-        /// Yorumun oluþturulma tarihi (varsayýlan: uygulama zaman damgasý)
-        /// </summary>
-        public DateTime OlusturulmaTarihi { get; set; } = DateTime.Now;
+        [Required, StringLength(100)]
+        public string KullaniciAdi { get; set; }
 
-        // Hangi göreve ait olduðu
-        public int GorevId { get; set; }
-        public Gorev Gorev { get; set; }
+        [Required]
+        public DateTime OlusturmaTarihi { get; set; } = DateTime.Now;
     }
 }

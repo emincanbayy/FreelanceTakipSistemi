@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreelanceTakipSistemi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250510101024_MakeRowVersionNullable")]
-    partial class MakeRowVersionNullable
+    [Migration("20250511233255_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,42 +27,48 @@ namespace FreelanceTakipSistemi.Migrations
 
             modelBuilder.Entity("FreelanceTakipSistemi.Models.Gorev", b =>
                 {
-                    b.Property<int>("GorevId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GorevId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Aciklama")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<string>("Baslik")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<DateTime?>("BitisTarihi")
-                        .HasColumnType("datetime2");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Durum")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<DateTime>("OlusturulmaTarihi")
+                    b.Property<DateTime>("OlusturmaTarihi")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Oncelik")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("ProjeId")
                         .HasColumnType("int");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
+                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.HasKey("GorevId");
+                    b.Property<DateTime?>("TeslimTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ProjeId");
 
@@ -134,23 +140,29 @@ namespace FreelanceTakipSistemi.Migrations
 
             modelBuilder.Entity("FreelanceTakipSistemi.Models.Yorum", b =>
                 {
-                    b.Property<int>("YorumId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("YorumId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("GorevId")
                         .HasColumnType("int");
 
                     b.Property<string>("Icerik")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime>("OlusturulmaTarihi")
+                    b.Property<string>("KullaniciAdi")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("YorumId");
+                    b.HasKey("Id");
 
                     b.HasIndex("GorevId");
 

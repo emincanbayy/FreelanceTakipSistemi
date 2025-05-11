@@ -1,51 +1,73 @@
 ﻿@model FreelanceTakipSistemi.Models.Gorev
+
 @{
     ViewData["Title"] = "Görev Detay";
+    Layout = "_Layout";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container py-4">
+    <h2 class="mb-4">@ViewData["Title"]</h2>
 
-<div class="mb-3"><strong>Proje:</strong> @Model.Proje.Baslik</div>
-<div class="mb-3"><strong>Başlık:</strong> @Model.Baslik</div>
-<div class="mb-3"><strong>Açıklama:</strong> @Model.Aciklama</div>
-<div class="mb-3"><strong>Durum:</strong> @Model.Durum</div>
+    <div class="mb-3"><strong>Proje:</strong> @Model.Proje?.Baslik</div>
+    <div class="mb-3"><strong>Başlık:</strong> @Model.Baslik</div>
+    <div class="mb-3"><strong>Açıklama:</strong> @Model.Aciklama</div>
+    <div class="mb-3"><strong>Durum:</strong> @Model.Durum</div>
 
-<hr />
+    <hr />
 
-<h4>Yorumlar</h4>
-@* Yeni yorum formu *@
-<form asp-controller="Yorum" asp-action="Create" method="post" class="mb-4">
-    <input type="hidden" asp-for="GorevId" value="@Model.GorevId" />
-    <div class="mb-3">
-        <textarea name="Icerik" class="form-control" placeholder="Yorumunuzu girin…" required></textarea>
-    </div>
-    <button type="submit" class="btn btn-primary">Yorumu Ekle</button>
-</form>
+    <h4>Yorumlar</h4>
 
-@* Mevcut yorumlar *@
-@if (Model.Yorumlar.Any())
-{
-    <ul class="list-group">
-        @foreach (var y in Model.Yorumlar.OrderByDescending(x => x.OlusturulmaTarihi))
-        {
-            <li class="list-group-item d-flex justify-content-between align-items-start">
-                <div>
-                    <small class="text-muted">@y.OlusturulmaTarihi.ToString("g")</small><br />
-                    @y.Icerik
-                </div>
-                <form asp-controller="Yorum" asp-action="Delete" method="post">
-                    <input type="hidden" name="id" value="@y.YorumId" />
-                    <input type="hidden" name="gorevId" value="@Model.GorevId" />
-                    <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
-                </form>
-            </li>
-        }
-    </ul>
-}
-else
-{
-    <p class="text-muted">Henüz yorum yok.</p>
-}
+    @* Yeni yorum formu *@
+    <form asp-controller="Yorum" asp-action="Create" method="post" class="mb-4">
+        @Html.AntiForgeryToken()
 
-<hr />
-<a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+        <input type="hidden" name="GorevId" value="@Model.Id" />
+
+        <div class="mb-3">
+            <textarea name="Icerik"
+                      class="form-control"
+                      placeholder="Yorumunuzu girin…"
+                      rows="3"
+                      required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-chat-left-text me-1"></i>Yorumu Ekle
+        </button>
+    </form>
+
+    @if (Model.Yorumlar != null && Model.Yorumlar.Any())
+    {
+        <ul class="list-group">
+            @foreach (var y in Model.Yorumlar.OrderByDescending(x => x.OlusturmaTarihi))
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div>
+                        <small class="text-muted">@y.OlusturmaTarihi.ToString("g")</small><br />
+                        @y.Icerik
+                    </div>
+                    <form asp-controller="Yorum"
+                          asp-action="Delete"
+                          method="post"
+                          class="ms-3">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@y.Id" />
+                        <input type="hidden" name="gorevId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <p class="text-muted">Henüz yorum yok.</p>
+    }
+
+    <hr />
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle me-1"></i>Görev Listesine Dön
+    </a>
+</div>
