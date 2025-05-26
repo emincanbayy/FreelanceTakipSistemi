@@ -6,17 +6,23 @@
 }
 
 <div class="container py-4">
-    <h2>@ViewData["Title"]</h2>
+    <h2 class="mb-4 text-primary">@ViewData["Title"]</h2>
+
+    @* Hatalıysa kullanıcıya göster *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <strong>Hata:</strong> Lütfen tüm gerekli alanları eksiksiz doldurun.
+        </div>
+    }
 
     <form asp-action="Create" method="post" novalidate>
         @Html.AntiForgeryToken()
         <div asp-validation-summary="All" class="alert alert-danger"></div>
 
         <div class="mb-3">
-            <label asp-for="ProjeId" class="form-label">Proje Seç</label>
-            <select asp-for="ProjeId"
-                    class="form-select"
-                    asp-items="ViewBag.ProjeList">
+            <label asp-for="ProjeId" class="form-label">Proje</label>
+            <select asp-for="ProjeId" class="form-select" asp-items="ViewBag.ProjeList">
                 <option value="">-- Proje Seçin --</option>
             </select>
             <span asp-validation-for="ProjeId" class="text-danger"></span>
@@ -24,13 +30,13 @@
 
         <div class="mb-3">
             <label asp-for="Baslik" class="form-label">Başlık</label>
-            <input asp-for="Baslik" class="form-control" placeholder="Görev başlığını girin" />
+            <input asp-for="Baslik" class="form-control" />
             <span asp-validation-for="Baslik" class="text-danger"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="Aciklama" class="form-label">Açıklama</label>
-            <textarea asp-for="Aciklama" class="form-control" rows="4" placeholder="Görev detaylarını girin"></textarea>
+            <textarea asp-for="Aciklama" class="form-control" rows="4"></textarea>
             <span asp-validation-for="Aciklama" class="text-danger"></span>
         </div>
 
