@@ -5,69 +5,115 @@
     Layout = "_Layout";
 }
 
-<div class="container py-4">
-    <h2 class="mb-4">@ViewData["Title"]</h2>
+@section Styles {
+    <style>
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+        }
 
-    <div class="mb-3"><strong>Proje:</strong> @Model.Proje?.Baslik</div>
-    <div class="mb-3"><strong>Başlık:</strong> @Model.Baslik</div>
-    <div class="mb-3"><strong>Açıklama:</strong> @Model.Aciklama</div>
-    <div class="mb-3"><strong>Durum:</strong> @Model.Durum</div>
+        .detail-box {
+            background: #f8f9fa;
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
 
-    <hr />
+        .comment-form textarea {
+            resize: none;
+        }
 
-    <h4>Yorumlar</h4>
+        .comment-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
 
-    @* Yeni yorum formu *@
-    <form asp-controller="Yorum" asp-action="Create" method="post" class="mb-4">
+        .comment-item {
+            background: #ffffff;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .comment-time {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .comment-text {
+            margin-top: 0.25rem;
+        }
+
+        .btn-sm i {
+            margin-right: 2px;
+        }
+    </style>
+}
+
+<div class="container py-5">
+    <h2 class="mb-4 text-primary">@ViewData["Title"]</h2>
+
+    <div class="detail-box">
+        <div class="mb-2"><span class="detail-label">Proje:</span> @Model.Proje?.Baslik</div>
+        <div class="mb-2"><span class="detail-label">Başlık:</span> @Model.Baslik</div>
+        <div class="mb-2"><span class="detail-label">Açıklama:</span> @Model.Aciklama</div>
+        <div class="mb-2">
+            <span class="detail-label">Durum:</span>
+            <span class="badge bg-@(Model.Durum == "Tamamlandı" ? "success" : Model.Durum == "Devam Ediyor" ? "warning text-dark" : "secondary")">
+                @Model.Durum
+            </span>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <h4 class="mb-3">Yorumlar</h4>
+
+    @* Yorum ekleme formu *@
+    <form asp-controller="Yorum" asp-action="Create" method="post" class="comment-form mb-4">
         @Html.AntiForgeryToken()
-
         <input type="hidden" name="GorevId" value="@Model.Id" />
 
         <div class="mb-3">
-            <textarea name="Icerik"
-                      class="form-control"
-                      placeholder="Yorumunuzu girin…"
-                      rows="3"
-                      required></textarea>
+            <textarea name="Icerik" class="form-control" placeholder="Yorumunuzu yazın..." rows="3" required></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">
-            <i class="bi bi-chat-left-text me-1"></i>Yorumu Ekle
+            <i class="bi bi-chat-left-text me-1"></i> Yorumu Ekle
         </button>
     </form>
 
     @if (Model.Yorumlar != null && Model.Yorumlar.Any())
     {
-        <ul class="list-group">
+        <div class="comment-list">
             @foreach (var y in Model.Yorumlar.OrderByDescending(x => x.OlusturmaTarihi))
             {
-                <li class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="comment-item d-flex justify-content-between">
                     <div>
-                        <small class="text-muted">@y.OlusturmaTarihi.ToString("g")</small><br />
-                        @y.Icerik
+                        <div class="comment-time">@y.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</div>
+                        <div class="comment-text">@y.Icerik</div>
                     </div>
-                    <form asp-controller="Yorum"
-                          asp-action="Delete"
-                          method="post"
-                          class="ms-3">
+                    <form asp-controller="Yorum" asp-action="Delete" method="post" class="ms-3">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="id" value="@y.Id" />
                         <input type="hidden" name="gorevId" value="@Model.Id" />
-                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Yorumu Sil">
                             <i class="bi bi-trash"></i>
                         </button>
                     </form>
-                </li>
+                </div>
             }
-        </ul>
+        </div>
     }
     else
     {
-        <p class="text-muted">Henüz yorum yok.</p>
+        <p class="text-muted">Henüz yorum yapılmamış.</p>
     }
 
-    <hr />
+    <hr class="my-4" />
+
     <a asp-action="Index" class="btn btn-secondary">
-        <i class="bi bi-arrow-left-circle me-1"></i>Görev Listesine Dön
+        <i class="bi bi-arrow-left-circle me-1"></i> Görev Listesine Dön
     </a>
 </div>

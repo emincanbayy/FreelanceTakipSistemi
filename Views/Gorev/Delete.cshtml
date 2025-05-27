@@ -2,35 +2,94 @@
 
 @{
     ViewData["Title"] = "Görev Sil";
+    Layout = "_Layout";
 }
 
-<h2>@ViewData["Title"]</h2>
-<h4>“@Model.Baslik” başlıklı görevi silmek istediğinize emin misiniz?</h4>
+@section Styles {
+    <style>
+        .delete-container {
+            background: #fff;
+            padding: 2rem 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            max-width: 700px;
+            margin: 2rem auto;
+        }
 
-<form asp-action="Delete" method="post">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
+        .delete-container h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #dc3545;
+        }
 
-    <div class="form-group">
-        <label>Açıklama</label>
-        <p>@Model.Aciklama</p>
-    </div>
+        .delete-container h4 {
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+            color: #333;
+        }
 
-    <div class="form-group">
-        <label>Durum</label>
-        <p>@Model.Durum</p>
-    </div>
+        .delete-details label {
+            font-weight: 500;
+            margin-bottom: 0;
+        }
 
-    <div class="form-group">
-        <label>Oluşturulma Tarihi</label>
-        <p>@Model.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</p>
-    </div>
+        .delete-details p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
 
-    <div class="form-group">
-        <label>Teslim Tarihi</label>
-        <p>@Model.TeslimTarihi?.ToString("dd.MM.yyyy")</p>
-    </div>
+        .btn-danger {
+            padding: 0.6rem 1.5rem;
+        }
 
-    <button type="submit" class="btn btn-danger">Sil</button>
-    <a asp-action="Index" class="btn btn-secondary">İptal</a>
-</form>
+        .btn-secondary {
+            padding: 0.6rem 1.5rem;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+            transition: all 0.2s ease;
+        }
+    </style>
+}
+
+<div class="delete-container">
+    <h2>@ViewData["Title"]</h2>
+    <h4>“@Model.Baslik” başlıklı görevi <strong>silmek istediğinize emin misiniz?</strong></h4>
+
+    <form asp-action="Delete" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div class="delete-details">
+            <div class="mb-2">
+                <label>Açıklama:</label>
+                <p>@Model.Aciklama</p>
+            </div>
+
+            <div class="mb-2">
+                <label>Durum:</label>
+                <p>
+                    <span class="badge bg-@(Model.Durum == "Tamamlandı" ? "success" : Model.Durum == "Devam Ediyor" ? "warning text-dark" : "secondary")">
+                        @Model.Durum
+                    </span>
+                </p>
+            </div>
+
+            <div class="mb-2">
+                <label>Oluşturulma Tarihi:</label>
+                <p>@Model.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</p>
+            </div>
+
+            <div class="mb-4">
+                <label>Teslim Tarihi:</label>
+                <p>@Model.TeslimTarihi?.ToString("dd.MM.yyyy")</p>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-danger">Sil</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">İptal</a>
+        </div>
+    </form>
+</div>

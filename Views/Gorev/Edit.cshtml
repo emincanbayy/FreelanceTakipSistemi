@@ -5,12 +5,44 @@
     Layout = "_Layout";
 }
 
-<div class="container py-4">
+@section Styles {
+    <style>
+        .edit-form-container {
+            background: #ffffff;
+            padding: 2rem 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+
+        .edit-form-container h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #0d6efd;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 0.6rem 1.4rem;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+}
+
+<div class="edit-form-container">
     <h2>@ViewData["Title"]</h2>
 
     <form asp-action="Edit" method="post" novalidate>
         @Html.AntiForgeryToken()
-
         <input type="hidden" asp-for="Id" />
 
         <div class="mb-3">
@@ -18,19 +50,19 @@
             <select asp-for="ProjeId" class="form-select" asp-items="ViewBag.ProjeList">
                 <option value="">-- Proje Seçin --</option>
             </select>
-            <span asp-validation-for="ProjeId" class="text-danger"></span>
+            <span asp-validation-for="ProjeId" class="text-danger small"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="Baslik" class="form-label">Başlık</label>
             <input asp-for="Baslik" class="form-control" />
-            <span asp-validation-for="Baslik" class="text-danger"></span>
+            <span asp-validation-for="Baslik" class="text-danger small"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="Aciklama" class="form-label">Açıklama</label>
             <textarea asp-for="Aciklama" class="form-control" rows="4"></textarea>
-            <span asp-validation-for="Aciklama" class="text-danger"></span>
+            <span asp-validation-for="Aciklama" class="text-danger small"></span>
         </div>
 
         <div class="mb-3">
@@ -41,16 +73,16 @@
                 <option value="Devam Ediyor">Devam Ediyor</option>
                 <option value="Tamamlandı">Tamamlandı</option>
             </select>
-            <span asp-validation-for="Durum" class="text-danger"></span>
+            <span asp-validation-for="Durum" class="text-danger small"></span>
         </div>
 
         <div class="mb-3">
             <label asp-for="TeslimTarihi" class="form-label">Teslim Tarihi</label>
             <input asp-for="TeslimTarihi" type="date" class="form-control" />
-            <span asp-validation-for="TeslimTarihi" class="text-danger"></span>
+            <span asp-validation-for="TeslimTarihi" class="text-danger small"></span>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-4">
             <label asp-for="Oncelik" class="form-label">Öncelik</label>
             <select asp-for="Oncelik" class="form-select">
                 <option value="">-- Öncelik Seçin --</option>
@@ -58,11 +90,13 @@
                 <option value="Orta">Orta</option>
                 <option value="Yüksek">Yüksek</option>
             </select>
-            <span asp-validation-for="Oncelik" class="text-danger"></span>
+            <span asp-validation-for="Oncelik" class="text-danger small"></span>
         </div>
 
-        <button type="submit" class="btn btn-primary">Güncelle</button>
-        <a asp-action="Index" class="btn btn-secondary ms-2">Geri Dön</a>
+        <div class="d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Geri Dön</a>
+        </div>
     </form>
 </div>
 

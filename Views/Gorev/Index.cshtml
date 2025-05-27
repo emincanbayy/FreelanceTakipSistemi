@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<FreelanceTakipSistemi.Models.Gorev>
+
 @{
     ViewData["Title"] = "Görevler";
     Layout = "_Layout";
@@ -6,9 +7,9 @@
 
 @section Styles {
     <style>
-        /* Hero bölümü */
+        /* Hero Bölümü */
         .tasks-hero {
-            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4);
             color: white;
             padding: 3rem 0;
             text-align: center;
@@ -40,6 +41,7 @@
             color: #6c757d;
         }
 
+        /* Tablo */
         .table thead {
             background-color: #f8f9fa;
         }
@@ -57,6 +59,20 @@
 
         .btn-sm i {
             margin-right: 4px;
+        }
+
+        @media (max-width: 576px) {
+            .table-responsive table {
+                font-size: 0.875rem;
+            }
+
+            .tasks-hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .tasks-hero p {
+                font-size: 1rem;
+            }
         }
     </style>
 }
@@ -87,40 +103,54 @@
 
 <!-- Görev Listesi -->
 <div class="container">
-    <div class="table-responsive shadow-sm rounded">
-        <table class="table table-striped table-hover align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Proje</th>
-                    <th scope="col">Başlık</th>
-                    <th scope="col">Durum</th>
-                    <th scope="col" class="text-end">İşlemler</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var g in Model)
-                {
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info mt-3">
+            Henüz herhangi bir görev eklenmemiş.
+            <a asp-action="Create" class="alert-link">Yeni görev oluşturmak için tıklayın.</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-light">
                     <tr>
-                        <td>@g.Id</td>
-                        <td>@g.Proje?.Baslik</td>
-                        <td>@g.Baslik</td>
-                        <td>
-                            <span class="badge bg-@(g.Durum == "Tamamlandı" ? "success" : g.Durum == "Devam Ediyor" ? "warning text-dark" : "secondary")">
-                                @g.Durum
-                            </span>
-                        </td>
-                        <td class="text-end">
-                            <a asp-action="Edit" asp-route-id="@g.Id" class="btn btn-sm btn-outline-primary me-2">
-                                <i class="bi bi-pencil-square"></i>Düzenle
-                            </a>
-                            <a asp-action="Delete" asp-route-id="@g.Id" class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-trash"></i>Sil
-                            </a>
-                        </td>
+                        <th>#</th>
+                        <th>Proje</th>
+                        <th>Başlık</th>
+                        <th>Durum</th>
+                        <th class="text-end">İşlemler</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    @foreach (var g in Model)
+                    {
+                        <tr>
+                            <td>@g.Id</td>
+                            <td>@g.Proje?.Baslik</td>
+                            <td>@g.Baslik</td>
+                            <td>
+                                <span class="badge bg-@(g.Durum == "Tamamlandı" ? "success" : g.Durum == "Devam Ediyor" ? "warning text-dark" : "secondary")">
+                                    <i class="bi @(g.Durum == "Tamamlandı" ? "bi-check-circle-fill" : g.Durum == "Devam Ediyor" ? "bi-hourglass-split" : "bi-clock") me-1"></i>
+                                    @g.Durum
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@g.Id" class="btn btn-sm btn-outline-info me-2">
+                                    <i class="bi bi-eye"></i>Detay
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@g.Id" class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="bi bi-pencil-square"></i>Düzenle
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@g.Id" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash"></i>Sil
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 </div>
