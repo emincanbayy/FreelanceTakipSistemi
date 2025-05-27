@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FreelanceTakipSistemi.Data;
@@ -9,120 +7,142 @@ using FreelanceTakipSistemi.Models;
 
 namespace FreelanceTakipSistemi.Controllers
 {
-    [Authorize]
     public class YorumController : Controller
     {
         private readonly AppDbContext _context;
-
-        public YorumController(AppDbContext context)
-        {
-            _context = context;
-        }
+        public YorumController(AppDbContext context) => _context = context;
 
         // GET: /Yorum?gorevId=5
-        public async Task<IActionResult> Index(int gorevId)
+        public IActionResult Index(int gorevId)
         {
             ViewBag.GorevId = gorevId;
-
-            var yorumlar = await _context.Yorumlar
+            var yorumlar = _context.Yorumlar
                 .Where(y => y.GorevId == gorevId)
                 .OrderByDescending(y => y.OlusturmaTarihi)
-                .ToListAsync();
-
+                .ToList();
             return View(yorumlar);
         }
 
         // GET: /Yorum/Create?gorevId=5
-        public IActionResult Create(int gorevId)
+        public IActionResult Create(int? gorevId)
         {
-            ViewBag.GorevId = gorevId;
-            return View(new Yorum { GorevId = gorevId });
+            ViewBag.Gorevler = _context.Gorevler
+                .AsNoTracking()
+                .OrderBy(g => g.TeslimTarihi)
+                .Select(g => new { g.Id, g.Baslik })
+                .ToList();
+
+            var model = new Yorum { GorevId = gorevId ?? 0 };
+            return View(model);
         }
 
         // POST: /Yorum/Create
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Yorum model)
+        public IActionResult Create(Yorum yorum)
         {
-            // Zorunlu alan atamaları
-            model.KullaniciAdi = User.Identity?.Name ?? "Anonim";
-            model.OlusturmaTarihi = DateTime.Now;
+            // Sistemden kullanıcı adını al
+            yorum.KullaniciAdi = User.Identity?.IsAuthenticated == true
+                ? User.Identity.Name!
+                : "Anonim";
 
-            // Navigation property validasyonunu kaldır
-            ModelState.Remove(nameof(model.Gorev));
+            // Görev listesini yeniden yükle
+            ViewBag.Gorevler = _context.Gorevler
+                .AsNoTracking()
+                .OrderBy(g => g.TeslimTarihi)
+                .Select(g => new { g.Id, g.Baslik })
+                .ToList();
+
+            // Geçerli bir görev seçildi mi?
+            if (!_context.Gorevler.Any(g => g.Id == yorum.GorevId))
+                ModelState.AddModelError(nameof(yorum.GorevId), "Lütfen listeden geçerli bir görev seçin.");
+
+            // Bind edilmeyen alanları temizle
+            ModelState.Remove(nameof(yorum.KullaniciAdi));
+            ModelState.Remove(nameof(yorum.RowVersion));
+            ModelState.Remove(nameof(yorum.Gorev));
 
             if (!ModelState.IsValid)
-            {
-                ViewBag.GorevId = model.GorevId;
-                return View(model);
-            }
+                return View(yorum);
 
-            _context.Yorumlar.Add(model);
+            yorum.OlusturmaTarihi = DateTime.Now;
+            _context.Yorumlar.Add(yorum);
             try
             {
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index), new { gorevId = model.GorevId });
+                _context.SaveChanges();
             }
             catch (DbUpdateException ex)
             {
-                var msg = ex.InnerException?.Message ?? ex.Message;
-                ModelState.AddModelError(string.Empty, $"Veritabanı hatası: {msg}");
-                ViewBag.GorevId = model.GorevId;
-                return View(model);
+                ModelState.AddModelError("", $"Veritabanı hatası: {ex.InnerException?.Message ?? ex.Message}");
+                return View(yorum);
             }
+
+            TempData["Success"] = "Yorum başarıyla kaydedildi.";
+            // Yorum eklendikten sonra Index sayfasına yönlendir
+            return RedirectToAction(nameof(Index), new { gorevId = yorum.GorevId });
         }
 
         // GET: /Yorum/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {
-            var yorum = await _context.Yorumlar.FindAsync(id);
+            var yorum = _context.Yorumlar.Find(id);
             if (yorum == null) return NotFound();
             return View(yorum);
         }
 
         // POST: /Yorum/Edit/5
         [HttpPost, ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Yorum model)
+        public IActionResult Edit(Yorum yorum)
         {
-            if (id != model.Id) return BadRequest();
-
-            ModelState.Remove(nameof(model.Gorev));
-            ModelState.Remove(nameof(model.KullaniciAdi));
-            ModelState.Remove(nameof(model.OlusturmaTarihi));
+            // Bind edilmeyen alanları temizle
+            ModelState.Remove(nameof(yorum.KullaniciAdi));
+            ModelState.Remove(nameof(yorum.RowVersion));
+            ModelState.Remove(nameof(yorum.Gorev));
 
             if (!ModelState.IsValid)
-                return View(model);
+                return View(yorum);
 
             try
             {
-                _context.Yorumlar.Update(model);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index), new { gorevId = model.GorevId });
+                _context.Yorumlar.Update(yorum);
+                _context.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateException ex)
             {
-                ModelState.AddModelError(string.Empty, "Bu yorum başka bir kullanıcı tarafından değiştirildi.");
-                return View(model);
+                ModelState.AddModelError("", $"Güncelleme hatası: {ex.InnerException?.Message ?? ex.Message}");
+                return View(yorum);
             }
+
+            return RedirectToAction("Details", "Gorev", new { id = yorum.GorevId });
         }
 
         // GET: /Yorum/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        public IActionResult Delete(int id)
         {
-            var yorum = await _context.Yorumlar.FindAsync(id);
+            var yorum = _context.Yorumlar.Find(id);
             if (yorum == null) return NotFound();
             return View(yorum);
         }
 
         // POST: /Yorum/Delete/5
         [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public IActionResult DeleteConfirmed(int id)
         {
-            var yorum = await _context.Yorumlar.FindAsync(id);
+            var yorum = _context.Yorumlar.Find(id);
             if (yorum == null) return NotFound();
 
+            int gorevId = yorum.GorevId;
             _context.Yorumlar.Remove(yorum);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), new { gorevId = yorum.GorevId });
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                TempData["Error"] = $"Silme hatası: {ex.InnerException?.Message ?? ex.Message}";
+                return RedirectToAction(nameof(Delete), new { id });
+            }
+
+            return RedirectToAction("Details", "Gorev", new { id = gorevId });
         }
     }
 }

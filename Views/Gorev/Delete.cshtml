@@ -1,4 +1,5 @@
 ﻿@model FreelanceTakipSistemi.Models.Gorev
+
 @{
     ViewData["Title"] = "Görev Sil";
 }
@@ -9,20 +10,22 @@
 <form asp-action="Delete" method="post">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="RowVersion" />
 
     <div class="form-group">
         <label>Açıklama</label>
         <p>@Model.Aciklama</p>
     </div>
+
     <div class="form-group">
         <label>Durum</label>
         <p>@Model.Durum</p>
     </div>
+
     <div class="form-group">
         <label>Oluşturulma Tarihi</label>
-        <p>@Model.OlusturmaTarihi:dd.MM.yyyy HH:mm</p>
+        <p>@Model.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</p>
     </div>
+
     <div class="form-group">
         <label>Teslim Tarihi</label>
         <p>@Model.TeslimTarihi?.ToString("dd.MM.yyyy")</p>
