@@ -1,24 +1,30 @@
 ﻿@model FreelanceTakipSistemi.Models.Yorum
 @{
     ViewData["Title"] = "Yorumu Sil";
+    Layout = "_Layout";
 }
+
 <div class="container py-4">
     <h2 class="mb-4 text-danger"><i class="bi bi-trash me-2"></i>@ViewData["Title"]</h2>
-    <form asp-action="Delete" method="post" class="shadow-sm p-4 bg-white rounded">
-        @Html.AntiForgeryToken()
-        <input type="hidden" asp-for="Id" />
-        <input type="hidden" asp-for="GorevId" />
-        <p>“@Model.Icerik” içeriğini silmek istediğinize emin misiniz?</p>
-        <div class="d-flex justify-content-between">
-            <a asp-action="Index" asp-route-gorevId="@Model.GorevId" class="btn btn-secondary">
-                <i class="bi bi-arrow-left-circle me-1"></i> İptal
-            </a>
-            <button type="submit" class="btn btn-danger">
-                <i class="bi bi-trash me-1"></i> Sil
-            </button>
-        </div>
-    </form>
+
+    <div class="shadow-sm p-4 bg-white rounded border">
+        <p>“@Model.Icerik” içerikli yorumu silmek istediğinize emin misiniz?</p>
+        <form asp-action="DeleteConfirmed" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="GorevId" />
+            <div class="d-flex justify-content-between">
+                <a asp-action="Index" asp-route-gorevId="@Model.GorevId" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle me-1"></i> İptal
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash me-1"></i> Sil
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
+
 @section Scripts {
-<partial name="_ValidationScriptsPartial" />
- }
+    <partial name="_ValidationScriptsPartial" />
+}

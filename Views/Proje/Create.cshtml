@@ -16,6 +16,15 @@
            value="@User.FindFirst(ClaimTypes.NameIdentifier).Value" />
     <input type="hidden" name="Gorevler" value="" />
 
+    @* Şirket seçimi ekleniyor *@
+    <div class="mb-3">
+        <label asp-for="SirketId" class="form-label">Şirket</label>
+        <select asp-for="SirketId" class="form-select" asp-items="ViewBag.Sirketler">
+            <option value="">-- Şirket Seçiniz --</option>
+        </select>
+        <span asp-validation-for="SirketId" class="text-danger"></span>
+    </div>
+
     <div class="mb-3">
         <label asp-for="Baslik" class="form-label">Başlık</label>
         <input asp-for="Baslik" class="form-control" />
@@ -29,7 +38,7 @@
     </div>
 
     <button type="submit" class="btn btn-success">Kaydet</button>
-    <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    <a asp-action="Index" class="btn btn-secondary ms-2">İptal</a>
 </form>
 
 @section Scripts {

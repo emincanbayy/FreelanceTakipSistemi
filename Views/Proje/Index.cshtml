@@ -27,6 +27,7 @@
                     transform: translateY(-2px);
                     box-shadow: 0 6px 18px rgba(0,0,0,0.2);
                 }
+
         /* Breadcrumb */
         .breadcrumb-custom {
             background: transparent;
@@ -73,6 +74,7 @@
                 <tr>
                     <th>Başlık</th>
                     <th>Açıklama</th>
+                    <th>Şirket</th>
                     <th>Sahip</th>
                     <th class="text-end">İşlemler</th>
                 </tr>
@@ -83,6 +85,7 @@
                     <tr>
                         <td>@p.Baslik</td>
                         <td>@p.Aciklama</td>
+                        <td>@p.Sirket?.Ad</td>
                         <td>@p.Kullanici.Isim</td>
                         <td class="text-end">
                             <a asp-action="Details" asp-route-id="@p.ProjeId" class="btn btn-sm btn-info me-1">
@@ -101,3 +104,7 @@
         </table>
     </div>
 </div>
+
+@section Scripts {
+    <!-- Eğer script gerekirse buraya ekleyin -->
+}

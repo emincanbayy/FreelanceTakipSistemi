@@ -12,5 +12,9 @@ namespace FreelanceTakipSistemi.Data
         public DbSet<Proje> Projeler { get; set; }
         public DbSet<Gorev> Gorevler { get; set; }
         public DbSet<Yorum> Yorumlar { get; set; }
+
+        // 🆕 Yeni eklenen tablolar
+        public DbSet<Sirket> Sirketler { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
     }
 }

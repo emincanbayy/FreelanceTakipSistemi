@@ -1,0 +1,36 @@
+﻿@model IEnumerable<FreelanceTakipSistemi.Models.Sirket>
+@{
+    ViewData["Title"] = "Şirketler";
+}
+
+<h2>@ViewData["Title"]</h2>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Yeni Şirket Ekle</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Ad</th>
+            <th>Telefon</th>
+            <th>Email</th>
+            <th>Oluşturma</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.Ad</td>
+                <td>@s.Telefon</td>
+                <td>@s.Email</td>
+                <td>@s.OlusturmaTarihi.ToString("g")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@s.Id" class="btn btn-sm btn-warning">Düzenle</a>
+                    <a asp-action="Delete" asp-route-id="@s.Id" class="btn btn-sm btn-danger">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

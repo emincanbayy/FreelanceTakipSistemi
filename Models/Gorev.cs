@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FreelanceTakipSistemi.Models
 {
@@ -27,8 +28,15 @@ namespace FreelanceTakipSistemi.Models
 
         public DateTime OlusturmaTarihi { get; set; } = DateTime.Now;
 
-        public Proje? Proje { get; set; }
+        // ——— Buraya eklenen alanlar ———
+        [Display(Name = "Atanan Kullanıcı")]
+        public int? AtananKullaniciId { get; set; }
 
+        [ForeignKey(nameof(AtananKullaniciId))]
+        public virtual Kullanici? AtananKullanici { get; set; }
+        // ————————————————————————
+
+        public Proje? Proje { get; set; }
         public ICollection<Yorum> Yorumlar { get; set; } = new List<Yorum>();
     }
 }

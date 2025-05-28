@@ -44,8 +44,7 @@
             background-color: #f8f9fa;
         }
 
-        .table td,
-        .table th {
+        .table td, .table th {
             vertical-align: middle;
         }
 
@@ -94,7 +93,10 @@
                     <th scope="col">#</th>
                     <th scope="col">Proje</th>
                     <th scope="col">Başlık</th>
+                    <th scope="col">Açıklama</th>
                     <th scope="col">Durum</th>
+                    <th scope="col">Teslim Tarihi</th>
+                    <th scope="col">Öncelik</th>
                     <th scope="col" class="text-end">İşlemler</th>
                 </tr>
             </thead>
@@ -105,11 +107,14 @@
                         <td>@g.Id</td>
                         <td>@g.Proje?.Baslik</td>
                         <td>@g.Baslik</td>
+                        <td>@g.Aciklama</td>
                         <td>
                             <span class="badge bg-@(g.Durum == "Tamamlandı" ? "success" : g.Durum == "Devam Ediyor" ? "warning text-dark" : "secondary")">
                                 @g.Durum
                             </span>
                         </td>
+                        <td>@(g.TeslimTarihi.HasValue ? g.TeslimTarihi.Value.ToString("dd.MM.yyyy") : "-")</td>
+                        <td>@g.Oncelik</td>
                         <td class="text-end">
                             <a asp-action="Edit" asp-route-id="@g.Id" class="btn btn-sm btn-outline-primary me-2">
                                 <i class="bi bi-pencil-square"></i>Düzenle
@@ -123,4 +128,8 @@
             </tbody>
         </table>
     </div>
-</div> 
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

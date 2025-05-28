@@ -6,6 +6,7 @@ using FreelanceTakipSistemi.Data;
 using FreelanceTakipSistemi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace FreelanceTakipSistemi.Controllers
@@ -13,7 +14,7 @@ namespace FreelanceTakipSistemi.Controllers
     /// <summary>
     /// Proje yönetimi için CRUD işlemlerini sağlar.
     /// </summary>
-    [Authorize]  // Proje işlemleri için kullanıcı girişi zorunlu
+    [Authorize]
     public class ProjeController : Controller
     {
         private readonly AppDbContext _context;
@@ -31,6 +32,7 @@ namespace FreelanceTakipSistemi.Controllers
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var sorgu = _context.Projeler
                                 .Include(p => p.Kullanici)
+                                .Include(p => p.Sirket)
                                 .AsNoTracking();
 
             if (!User.IsInRole("Admin"))
@@ -48,6 +50,8 @@ namespace FreelanceTakipSistemi.Controllers
         /// </summary>
         public IActionResult Create()
         {
+            // Şirket listesini dropdown için doldur
+            ViewBag.Sirketler = new SelectList(_context.Sirketler.OrderBy(s => s.Ad).ToList(), "Id", "Ad");
             return View(new Proje());
         }
 
@@ -57,15 +61,16 @@ namespace FreelanceTakipSistemi.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Proje model)
         {
-            // Oturum açmış kullanıcının ID'sini ata
             model.KullaniciId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-
-            // Navigation property validasyon hatalarını temizle
             ModelState.Remove(nameof(model.Kullanici));
             ModelState.Remove(nameof(model.Gorevler));
 
             if (!ModelState.IsValid)
+            {
+                // Hata durumunda da şirket listesi sağlanmalı
+                ViewBag.Sirketler = new SelectList(_context.Sirketler.OrderBy(s => s.Ad).ToList(), "Id", "Ad", model.SirketId);
                 return View(model);
+            }
 
             try
             {
@@ -75,9 +80,9 @@ namespace FreelanceTakipSistemi.Controllers
             }
             catch (DbUpdateException ex)
             {
-                // InnerException mesajı, eksik veya hatalı sütun bilgisini içerir
                 var error = ex.InnerException?.Message ?? ex.Message;
                 ModelState.AddModelError(string.Empty, $"Veritabanı hatası: {error}");
+                ViewBag.Sirketler = new SelectList(_context.Sirketler.OrderBy(s => s.Ad).ToList(), "Id", "Ad", model.SirketId);
                 return View(model);
             }
         }
@@ -88,8 +93,8 @@ namespace FreelanceTakipSistemi.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var proje = await _context.Projeler
-                                     .AsNoTracking()
-                                     .FirstOrDefaultAsync(p => p.ProjeId == id);
+                                      .AsNoTracking()
+                                      .FirstOrDefaultAsync(p => p.ProjeId == id);
             if (proje == null)
                 return NotFound();
 
@@ -97,6 +102,8 @@ namespace FreelanceTakipSistemi.Controllers
             if (!User.IsInRole("Admin") && proje.KullaniciId != userId)
                 return Forbid();
 
+            // Edit formunda da şirket listesi
+            ViewBag.Sirketler = new SelectList(_context.Sirketler.OrderBy(s => s.Ad).ToList(), "Id", "Ad", proje.SirketId);
             return View(proje);
         }
 
@@ -109,12 +116,14 @@ namespace FreelanceTakipSistemi.Controllers
             if (id != model.ProjeId)
                 return BadRequest();
 
-            // Navigation property validasyon hatalarını temizle
             ModelState.Remove(nameof(model.Kullanici));
             ModelState.Remove(nameof(model.Gorevler));
 
             if (!ModelState.IsValid)
+            {
+                ViewBag.Sirketler = new SelectList(_context.Sirketler.OrderBy(s => s.Ad).ToList(), "Id", "Ad", model.SirketId);
                 return View(model);
+            }
 
             var mevcut = await _context.Projeler
                                        .AsNoTracking()
@@ -126,7 +135,6 @@ namespace FreelanceTakipSistemi.Controllers
             if (!User.IsInRole("Admin") && mevcut.KullaniciId != userId)
                 return Forbid();
 
-            // Sahibiyi koru
             model.KullaniciId = mevcut.KullaniciId;
 
             try
@@ -139,6 +147,7 @@ namespace FreelanceTakipSistemi.Controllers
             {
                 var error = ex.InnerException?.Message ?? ex.Message;
                 ModelState.AddModelError(string.Empty, $"Veritabanı hatası: {error}");
+                ViewBag.Sirketler = new SelectList(_context.Sirketler.OrderBy(s => s.Ad).ToList(), "Id", "Ad", model.SirketId);
                 return View(model);
             }
         }
@@ -149,8 +158,8 @@ namespace FreelanceTakipSistemi.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var proje = await _context.Projeler
-                                     .AsNoTracking()
-                                     .FirstOrDefaultAsync(p => p.ProjeId == id);
+                                      .AsNoTracking()
+                                      .FirstOrDefaultAsync(p => p.ProjeId == id);
             if (proje == null)
                 return NotFound();
 

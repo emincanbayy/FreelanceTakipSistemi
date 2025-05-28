@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FreelanceTakipSistemi.Models
 {
@@ -10,32 +10,25 @@ namespace FreelanceTakipSistemi.Models
         [Key]
         public int ProjeId { get; set; }
 
-        [Required]
-        [StringLength(200)]
-        [Display(Name = "Proje Baþlýðý")]
-        public string Baslik { get; set; }
+        // Baþlýk ve Açýklama (isteðe baðlý)
+        public string? Baslik { get; set; }
+        public string? Aciklama { get; set; }
 
-        [StringLength(2000)]
-        [DataType(DataType.MultilineText)]
-        [Display(Name = "Açýklama")]
-        public string Aciklama { get; set; }
-
-        [Required]
-        [Display(Name = "Baþlangýç Tarihi")]
-        public DateTime BaslangicTarihi { get; set; } = DateTime.Now;
-
-        [Display(Name = "Bitiþ Tarihi")]
+        // Tarih alanlarý (nullable)
+        public DateTime? BaslangicTarihi { get; set; }
         public DateTime? BitisTarihi { get; set; }
 
-        [Required]
-        [Display(Name = "Kullanýcý")]
-        public int KullaniciId { get; set; }
-
-        [BindNever]
+        // Kullanýcý iliþkisi (nullable)
+        public int? KullaniciId { get; set; }
+        [ForeignKey(nameof(KullaniciId))]
         public Kullanici? Kullanici { get; set; }
 
-        [BindNever]
-        [ScaffoldColumn(false)]
-        public ICollection<Gorev> Gorevler { get; set; } = new List<Gorev>();
+        // Þirket iliþkisi (nullable)
+        public int? SirketId { get; set; }
+        [ForeignKey(nameof(SirketId))]
+        public Sirket? Sirket { get; set; }
+
+        // Görevler koleksiyonu (nullable)
+        public ICollection<Gorev>? Gorevler { get; set; }
     }
 }

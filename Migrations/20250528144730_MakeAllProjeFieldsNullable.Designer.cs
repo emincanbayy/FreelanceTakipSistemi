@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreelanceTakipSistemi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250526144434_AddYorumDuzenlemeAndRowVersion")]
-    partial class AddYorumDuzenlemeAndRowVersion
+    [Migration("20250528144730_MakeAllProjeFieldsNullable")]
+    partial class MakeAllProjeFieldsNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.4")
+                .HasAnnotation("ProductVersion", "9.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -35,6 +35,9 @@ namespace FreelanceTakipSistemi.Migrations
 
                     b.Property<string>("Aciklama")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AtananKullaniciId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Baslik")
                         .IsRequired()
@@ -58,6 +61,8 @@ namespace FreelanceTakipSistemi.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AtananKullaniciId");
 
                     b.HasIndex("ProjeId");
 
@@ -93,6 +98,40 @@ namespace FreelanceTakipSistemi.Migrations
                     b.ToTable("Kullanicilar");
                 });
 
+            modelBuilder.Entity("FreelanceTakipSistemi.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("GorevId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("KullaniciId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GorevId");
+
+                    b.HasIndex("KullaniciId");
+
+                    b.ToTable("Notifications");
+                });
+
             modelBuilder.Entity("FreelanceTakipSistemi.Models.Proje", b =>
                 {
                     b.Property<int>("ProjeId")
@@ -103,28 +142,62 @@ namespace FreelanceTakipSistemi.Migrations
 
                     b.Property<string>("Aciklama")
                         .IsRequired()
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("BaslangicTarihi")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Baslik")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("BitisTarihi")
+                    b.Property<DateTime>("BitisTarihi")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("KullaniciId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SirketId")
                         .HasColumnType("int");
 
                     b.HasKey("ProjeId");
 
                     b.HasIndex("KullaniciId");
 
+                    b.HasIndex("SirketId");
+
                     b.ToTable("Projeler");
+                });
+
+            modelBuilder.Entity("FreelanceTakipSistemi.Models.Sirket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Ad")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Adres")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OlusturmaTarihi")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Telefon")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sirketler");
                 });
 
             modelBuilder.Entity("FreelanceTakipSistemi.Models.Yorum", b =>
@@ -134,9 +207,6 @@ namespace FreelanceTakipSistemi.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("DuzenlemeTarihi")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("GorevId")
                         .HasColumnType("int");
@@ -148,15 +218,13 @@ namespace FreelanceTakipSistemi.Migrations
 
                     b.Property<string>("KullaniciAdi")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("OlusturmaTarihi")
                         .HasColumnType("datetime2");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
@@ -169,13 +237,36 @@ namespace FreelanceTakipSistemi.Migrations
 
             modelBuilder.Entity("FreelanceTakipSistemi.Models.Gorev", b =>
                 {
+                    b.HasOne("FreelanceTakipSistemi.Models.Kullanici", "AtananKullanici")
+                        .WithMany()
+                        .HasForeignKey("AtananKullaniciId");
+
                     b.HasOne("FreelanceTakipSistemi.Models.Proje", "Proje")
                         .WithMany("Gorevler")
                         .HasForeignKey("ProjeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("AtananKullanici");
+
                     b.Navigation("Proje");
+                });
+
+            modelBuilder.Entity("FreelanceTakipSistemi.Models.Notification", b =>
+                {
+                    b.HasOne("FreelanceTakipSistemi.Models.Gorev", "Gorev")
+                        .WithMany()
+                        .HasForeignKey("GorevId");
+
+                    b.HasOne("FreelanceTakipSistemi.Models.Kullanici", "Kullanici")
+                        .WithMany()
+                        .HasForeignKey("KullaniciId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gorev");
+
+                    b.Navigation("Kullanici");
                 });
 
             modelBuilder.Entity("FreelanceTakipSistemi.Models.Proje", b =>
@@ -186,7 +277,13 @@ namespace FreelanceTakipSistemi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FreelanceTakipSistemi.Models.Sirket", "Sirket")
+                        .WithMany()
+                        .HasForeignKey("SirketId");
+
                     b.Navigation("Kullanici");
+
+                    b.Navigation("Sirket");
                 });
 
             modelBuilder.Entity("FreelanceTakipSistemi.Models.Yorum", b =>

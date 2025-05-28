@@ -1,63 +1,218 @@
-﻿@{
+﻿@using System.Collections.Generic
+@using System.Linq
+@using FreelanceTakipSistemi.Models
+
+@{
     ViewData["Title"] = "Anasayfa";
     Layout = "_Layout";
 }
 
 @section Styles {
     <style>
-        /* Hero */
-        .hero {
-            background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
-            color: #fff;
-            padding: 5rem 0;
+        :root {
+            --primary: #5a0de0;
+            --secondary: #ff7f50;
+            --light-bg: #f8f9fa;
+            --dark-bg: #1e1e2f;
+            --text-dark: #343a40;
+            --text-muted: #6c757d;
         }
 
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+        }
+
+        /* HERO */
+        .hero {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            padding: 8rem 0 12rem;
+            text-align: center;
+            overflow: hidden;
+        }
+
+            .hero::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 120px;
+                background-color: var(--light-bg);
+                clip-path: polygon(0 0, 100% 0, 100% 40%, 0 100%);
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+                font-weight: 700;
+                margin-bottom: 1rem;
+                animation: fadeIn 0.8s ease-out;
+            }
+
+            .hero p {
+                font-size: 1.25rem;
+                margin-bottom: 2rem;
+                animation: fadeIn 1s ease-out;
+            }
+
             .hero .btn {
+                min-width: 180px;
+                margin: 0 .5rem;
+                padding: .75rem 1.5rem;
                 border-radius: 50px;
-                padding: 0.75rem 2rem;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                transition: transform .2s, box-shadow .2s;
+                font-weight: 600;
+                transition: transform .3s ease, box-shadow .3s ease;
             }
 
                 .hero .btn:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+                    transform: translateY(-4px);
+                    box-shadow: 0 .75rem 1.5rem rgba(0,0,0,0.2);
                 }
 
-        /* Feature cards */
-        .feature-card {
-            transition: transform .3s, box-shadow .3s;
+        /* ANIMATIONS */
+        @@keyframes fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        /* WELCOME BOX */
+        #welcomeBox {
+            animation: fadeIn 1s ease-out;
+        }
+
+        .fade-out {
+            animation: fadeOut 1s ease-in-out forwards;
+        }
+        @@keyframes fadeOut {
+            to
+
+        {
+            opacity: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            visibility: hidden;
+        }
+
+        }
+
+        /* ŞİRKETLER SCROLL */
+        .companies-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scroll-behavior: smooth;
+        }
+
+            .companies-scroll::-webkit-scrollbar {
+                height: 8px;
+            }
+
+            .companies-scroll::-webkit-scrollbar-thumb {
+                background-color: var(--secondary);
+                border-radius: 4px;
+            }
+
+        /* COMPANY CARD */
+        .company-card {
+            min-width: 280px;
+            flex-shrink: 0;
+            transition: transform .3s ease, box-shadow .3s ease;
             border: none;
             border-radius: .75rem;
         }
 
-            .feature-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 0.75rem 2rem rgba(0,0,0,0.15);
+            .company-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 .5rem 1.25rem rgba(0,0,0,0.15);
             }
 
-        /* Footer */
+        /* ÖZELLİKLER */
+        .feature-card {
+            transition: transform .3s ease, box-shadow .3s ease;
+            border-radius: .75rem;
+        }
+
+            .feature-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 1rem 2rem rgba(0,0,0,0.15);
+            }
+
+        /* FOOTER */
         footer {
-            background: #1a1a1a;
+            background-color: var(--dark-bg);
+            color: #aaa;
+            padding: 2rem 0;
+            border-top: 4px solid var(--primary);
         }
     </style>
 }
 
 <!-- HERO -->
-<section class="hero text-center">
-    <div class="container">
-        <h1 class="display-4 fw-bold mb-3">Freelance Takip Sistemi</h1>
-        <p class="lead mb-4">Projelerinizi ve görevlerinizi tek bir noktadan yönetin. Verimliliğinizi artırın, zamanınızı en iyi şekilde kullanın.</p>
-        <a asp-controller="Proje" asp-action="Index" class="btn btn-light btn-lg me-2">
-            <i class="bi bi-folder2-open me-1"></i>Projeleri Görüntüle
-        </a>
-        <a asp-controller="Gorev" asp-action="Index" class="btn btn-outline-light btn-lg">
-            <i class="bi bi-list-check me-1"></i>Görevleri Yönet
-        </a>
+<section class="hero">
+    <div class="container position-relative" style="z-index:1;">
+        <h1>Freelance Takip Sistemi</h1>
+        <p>Projelerinizi ve görevlerinizi tek bir noktadan yönetin. Verimliliğinizi artırın.</p>
+        <div class="d-flex justify-content-center">
+            <a asp-controller="Proje" asp-action="Index" class="btn btn-light btn-lg">Projeleri Görüntüle</a>
+            <a asp-controller="Gorev" asp-action="Index" class="btn btn-outline-light btn-lg">Görevleri Yönet</a>
+        </div>
     </div>
 </section>
 
-<!-- FEATURES -->
+<!-- WELCOME -->
+@if (User.Identity?.IsAuthenticated ?? false)
+{
+    <div id="welcomeBox" class="container my-5">
+        <div class="bg-white rounded shadow-sm p-4 text-center">
+            <h5 class="text-primary mb-2">👋 Hoş Geldin, <strong>@User.Identity.Name</strong>!</h5>
+            <p class="text-muted mb-0">Projelerini ve görevlerini aşağıdan yönetebilirsin.</p>
+        </div>
+    </div>
+}
+
+<!-- ŞİRKETLER -->
+<div class="container my-5">
+    <h2 class="mb-4">Şirketler</h2>
+    <div class="companies-scroll">
+        @if (ViewBag.Sirketler is IEnumerable<Sirket> sirketler && sirketler.Any())
+        {
+            @foreach (var s in sirketler)
+            {
+                <div class="card company-card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@s.Ad</h5>
+                        <p class="card-text text-muted">@s.Adres</p>
+                        @if (!string.IsNullOrWhiteSpace(s.Telefon))
+                        {
+                            <p class="mt-3"><i class="bi bi-telephone me-1"></i>@s.Telefon</p>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-info w-100">Henüz kayıtlı şirket yok.</div>
+        }
+    </div>
+</div>
+
+<!-- ÖZELLİKLER -->
 <section class="py-5">
     <div class="container">
         <div class="row g-4">
@@ -65,35 +220,31 @@
                 <div class="card feature-card shadow-sm h-100">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-kanban-fill display-4 text-primary mb-3"></i>
-                        <h5 class="card-title fw-bold">Projeler</h5>
-                        <p class="card-text text-muted">Tüm projelerinizi gözden geçirin, yeni projeler ekleyin veya mevcut projeleri güncelleyin.</p>
-                        <a asp-controller="Proje" asp-action="Index" class="btn btn-primary rounded-pill px-4">
-                            Devam Et
-                        </a>
+                        <h5 class="card-title">Projeler</h5>
+                        <p class="card-text text-muted">Projelerinizi inceleyin veya yeni proje ekleyin.</p>
+                        <a asp-controller="Proje" asp-action="Index" class="btn btn-primary rounded-pill px-4">Devam Et</a>
                     </div>
                 </div>
             </div>
+
             <div class="col-md-4">
                 <div class="card feature-card shadow-sm h-100">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-tasks-fill display-4 text-success mb-3"></i>
-                        <h5 class="card-title fw-bold">Görevler</h5>
-                        <p class="card-text text-muted">Görevlerinizi planlayın, durumlarını güncelleyin ve bitiş tarihlerini takip edin.</p>
-                        <a asp-controller="Gorev" asp-action="Index" class="btn btn-success rounded-pill px-4">
-                            Devam Et
-                        </a>
+                        <h5 class="card-title">Görevler</h5>
+                        <p class="card-text text-muted">Görevlerinizi takip edin ve düzenleyin.</p>
+                        <a asp-controller="Gorev" asp-action="Index" class="btn btn-success rounded-pill px-4">Devam Et</a>
                     </div>
                 </div>
             </div>
+
             <div class="col-md-4">
                 <div class="card feature-card shadow-sm h-100">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-chat-dots-fill display-4 text-info mb-3"></i>
-                        <h5 class="card-title fw-bold">Yorumlar</h5>
-                        <p class="card-text text-muted">Ekip üyelerinin yorumlarını inceleyin ve geri bildirimde bulunun.</p>
-                        <a asp-controller="Yorum" asp-action="Index" class="btn btn-info rounded-pill px-4">
-                            Devam Et
-                        </a>
+                        <h5 class="card-title">Yorumlar</h5>
+                        <p class="card-text text-muted">Ekip içi yorumları inceleyin ve yanıtlayın.</p>
+                        <a asp-controller="Yorum" asp-action="Index" class="btn btn-info rounded-pill px-4">Devam Et</a>
                     </div>
                 </div>
             </div>
@@ -102,8 +253,17 @@
 </section>
 
 <!-- FOOTER -->
-<footer class="text-center text-light py-3">
-    <div class="container">
+<footer>
+    <div class="container text-center">
         <small>© @DateTime.Now.Year Freelance Takip Sistemi. Tüm hakları saklıdır.</small>
     </div>
 </footer>
+
+@section Scripts {
+    <script>
+        setTimeout(() => {
+            const box = document.getElementById('welcomeBox');
+            if (box) box.classList.add('fade-out');
+        }, 3000);
+    </script>
+}

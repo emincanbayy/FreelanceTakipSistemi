@@ -40,23 +40,21 @@ namespace FreelanceTakipSistemi.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Create(Yorum yorum)
         {
-            // Sistemden kullanıcı adını al
+            // Yorum yapan kullanıcı adı
             yorum.KullaniciAdi = User.Identity?.IsAuthenticated == true
                 ? User.Identity.Name!
                 : "Anonim";
 
-            // Görev listesini yeniden yükle
+            // Görev listesini ve validasyonu hazırla
             ViewBag.Gorevler = _context.Gorevler
                 .AsNoTracking()
                 .OrderBy(g => g.TeslimTarihi)
                 .Select(g => new { g.Id, g.Baslik })
                 .ToList();
 
-            // Geçerli bir görev seçildi mi?
             if (!_context.Gorevler.Any(g => g.Id == yorum.GorevId))
-                ModelState.AddModelError(nameof(yorum.GorevId), "Lütfen listeden geçerli bir görev seçin.");
+                ModelState.AddModelError(nameof(yorum.GorevId), "Lütfen geçerli bir görev seçin.");
 
-            // Bind edilmeyen alanları temizle
             ModelState.Remove(nameof(yorum.KullaniciAdi));
             ModelState.Remove(nameof(yorum.RowVersion));
             ModelState.Remove(nameof(yorum.Gorev));
@@ -76,8 +74,36 @@ namespace FreelanceTakipSistemi.Controllers
                 return View(yorum);
             }
 
+            // ───────────────────────────────────────────────
+            // 🔔 Bildirim kısmı:
+            try
+            {
+                // Atanan kullanıcıyı çek
+                var atananId = _context.Gorevler
+                    .Where(g => g.Id == yorum.GorevId)
+                    .Select(g => g.AtananKullaniciId)
+                    .FirstOrDefault();
+
+                if (atananId.HasValue)
+                {
+                    var note = new Notification
+                    {
+                        KullaniciId = atananId.Value,
+                        GorevId = yorum.GorevId,
+                        Message = $"Görevinize yeni yorum eklendi: “{yorum.Icerik}”",
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    _context.Notifications.Add(note);
+                    _context.SaveChanges();
+                }
+            }
+            catch
+            {
+                // Bildirim ekleme başarısızsa uygulamayı etkileme
+            }
+            // ───────────────────────────────────────────────
+
             TempData["Success"] = "Yorum başarıyla kaydedildi.";
-            // Yorum eklendikten sonra Index sayfasına yönlendir
             return RedirectToAction(nameof(Index), new { gorevId = yorum.GorevId });
         }
 
@@ -93,7 +119,6 @@ namespace FreelanceTakipSistemi.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Edit(Yorum yorum)
         {
-            // Bind edilmeyen alanları temizle
             ModelState.Remove(nameof(yorum.KullaniciAdi));
             ModelState.Remove(nameof(yorum.RowVersion));
             ModelState.Remove(nameof(yorum.Gorev));

@@ -4,6 +4,7 @@ using FreelanceTakipSistemi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreelanceTakipSistemi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250528143905_AddSirketNavigationToProje")]
+    partial class AddSirketNavigationToProje
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,29 +142,29 @@ namespace FreelanceTakipSistemi.Migrations
 
                     b.Property<string>("Aciklama")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<DateTime>("BaslangicTarihi")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Baslik")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
-                    b.Property<DateTime>("BitisTarihi")
+                    b.Property<DateTime?>("BitisTarihi")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("KullaniciId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SirketId")
+                    b.Property<int>("SirketId")
                         .HasColumnType("int");
 
                     b.HasKey("ProjeId");
 
                     b.HasIndex("KullaniciId");
-
-                    b.HasIndex("SirketId");
 
                     b.ToTable("Projeler");
                 });
@@ -274,13 +277,7 @@ namespace FreelanceTakipSistemi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FreelanceTakipSistemi.Models.Sirket", "Sirket")
-                        .WithMany()
-                        .HasForeignKey("SirketId");
-
                     b.Navigation("Kullanici");
-
-                    b.Navigation("Sirket");
                 });
 
             modelBuilder.Entity("FreelanceTakipSistemi.Models.Yorum", b =>
