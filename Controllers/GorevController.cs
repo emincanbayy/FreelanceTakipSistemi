@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FreelanceTakipSistemi.Data;
@@ -106,8 +108,8 @@ namespace FreelanceTakipSistemi.Controllers
             return View(gorev);
         }
 
-        // POST: /Gorev/Delete
-        [HttpPost]
+        // POST: /Gorev/Delete/5
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {

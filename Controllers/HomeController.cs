@@ -1,52 +1,47 @@
+// Controllers/HomeController.cs
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Claims;
+using System.Threading.Tasks;
+using FreelanceTakipSistemi.Data;
+using FreelanceTakipSistemi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using FreelanceTakipSistemi.Data;
-using FreelanceTakipSistemi.Models;
 
 namespace FreelanceTakipSistemi.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly AppDbContext _db;
+        private readonly AppDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger, AppDbContext db)
+        public HomeController(ILogger<HomeController> logger, AppDbContext context)
         {
             _logger = logger;
-            _db = db;
+            _context = context;
         }
 
-        public IActionResult Index()
+        // GET: / or /Home/Index
+        public async Task<IActionResult> Index()
         {
-            // 1?? Þirketleri ViewBag ile taþý
-            ViewBag.Sirketler = _db.Sirketler
-                                   .OrderBy(s => s.Ad)
-                                   .ToList();
+            // Veritabanýndan þirketleri çek
+            var sirketler = await _context.Sirketler
+                .AsNoTracking()
+                .OrderBy(s => s.Ad)
+                .ToListAsync();
 
-            // 2?? Okunmamýþ bildirim sayýsýný taþý (oturum varsa)
-            var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (int.TryParse(userIdStr, out var userId))
-            {
-                ViewBag.UnreadNotificationCount = _db.Notifications
-                                                     .Count(n => n.KullaniciId == userId && !n.IsRead);
-            }
-            else
-            {
-                ViewBag.UnreadNotificationCount = 0;
-            }
-
+            // ViewBag'e ata
+            ViewBag.Sirketler = sirketler;
             return View();
         }
 
+        // GET: /Home/Privacy
         public IActionResult Privacy()
         {
             return View();
         }
 
+        // GET: /Home/Error
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

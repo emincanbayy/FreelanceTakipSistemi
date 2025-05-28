@@ -23,17 +23,12 @@
                 <ul class="navbar-nav ms-auto">
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <!-- Kullanıcı adı nav öğesi -->
-                        <li class="nav-item">
-                            <span class="nav-link">Merhaba, <strong>@User.Identity.Name</strong></span>
-                        </li>
-
+                        <li class="nav-item"><a class="nav-link" href="/Proje">Projeler</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Gorev">Görevler</a></li>
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item"><a class="nav-link" href="/Admin">Admin</a></li>
                         }
-
-                        <!-- Çıkış -->
                         <li class="nav-item"><a class="nav-link" href="/Kullanici/Cikis">Çıkış</a></li>
                     }
                     else

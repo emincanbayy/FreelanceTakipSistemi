@@ -16,17 +16,17 @@
             margin: 2rem auto;
         }
 
-        .delete-container h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #dc3545;
-        }
+            .delete-container h2 {
+                font-size: 1.8rem;
+                font-weight: 600;
+                color: #dc3545;
+            }
 
-        .delete-container h4 {
-            margin-top: 1rem;
-            margin-bottom: 2rem;
-            color: #333;
-        }
+            .delete-container h4 {
+                margin-top: 1rem;
+                margin-bottom: 2rem;
+                color: #333;
+            }
 
         .delete-details label {
             font-weight: 500;
@@ -63,10 +63,17 @@
 
         <div class="delete-details">
             <div class="mb-2">
+                <label>Proje:</label>
+                <p>@Model.Proje?.Baslik</p>
+            </div>
+            <div class="mb-2">
+                <label>Başlık:</label>
+                <p>@Model.Baslik</p>
+            </div>
+            <div class="mb-2">
                 <label>Açıklama:</label>
                 <p>@Model.Aciklama</p>
             </div>
-
             <div class="mb-2">
                 <label>Durum:</label>
                 <p>
@@ -75,15 +82,13 @@
                     </span>
                 </p>
             </div>
-
             <div class="mb-2">
-                <label>Oluşturulma Tarihi:</label>
-                <p>@Model.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</p>
-            </div>
-
-            <div class="mb-4">
                 <label>Teslim Tarihi:</label>
-                <p>@Model.TeslimTarihi?.ToString("dd.MM.yyyy")</p>
+                <p>@(Model.TeslimTarihi.HasValue ? Model.TeslimTarihi.Value.ToString("dd.MM.yyyy") : "-")</p>
+            </div>
+            <div class="mb-2">
+                <label>Öncelik:</label>
+                <p>@Model.Oncelik</p>
             </div>
         </div>
 

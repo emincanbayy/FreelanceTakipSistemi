@@ -10,12 +10,12 @@ namespace FreelanceTakipSistemi.Models
         [Key]
         public int Id { get; set; }
 
-        // GorevId hâlâ gerekli
+        // Görev ID zorunlu
         [Required]
         [Display(Name = "Görev ID")]
         public int GorevId { get; set; }
 
-        // Navigation opsiyonel, bind etmiyoruz
+        // Navigation property opsiyonel, bind edilmeyecek
         [BindNever]
         public virtual Gorev? Gorev { get; set; }
 
@@ -33,11 +33,16 @@ namespace FreelanceTakipSistemi.Models
         [Display(Name = "Oluþturma Tarihi")]
         public DateTime OlusturmaTarihi { get; set; } = DateTime.Now;
 
-        // DüzenlemeTarihi artýk yok
-
-        // RowVersion nullable, scaffold etmiyoruz
+        // RowVersion concurrency
         [Timestamp]
         [BindNever]
         public byte[]? RowVersion { get; set; }
+
+        // Kullanýcý iliþkisi opsiyonel
+        public int? KullaniciId { get; set; }
+
+        [ForeignKey(nameof(KullaniciId))]
+        [BindNever]
+        public virtual Kullanici? Kullanici { get; set; }
     }
 }

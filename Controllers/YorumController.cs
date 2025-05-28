@@ -19,6 +19,7 @@ namespace FreelanceTakipSistemi.Controllers
             var yorumlar = _context.Yorumlar
                 .Where(y => y.GorevId == gorevId)
                 .OrderByDescending(y => y.OlusturmaTarihi)
+                .AsNoTracking()
                 .ToList();
             return View(yorumlar);
         }
@@ -29,7 +30,6 @@ namespace FreelanceTakipSistemi.Controllers
             ViewBag.Gorevler = _context.Gorevler
                 .AsNoTracking()
                 .OrderBy(g => g.TeslimTarihi)
-                .Select(g => new { g.Id, g.Baslik })
                 .ToList();
 
             var model = new Yorum { GorevId = gorevId ?? 0 };
@@ -40,20 +40,14 @@ namespace FreelanceTakipSistemi.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Create(Yorum yorum)
         {
-            // Yorum yapan kullanıcı adı
             yorum.KullaniciAdi = User.Identity?.IsAuthenticated == true
                 ? User.Identity.Name!
                 : "Anonim";
 
-            // Görev listesini ve validasyonu hazırla
             ViewBag.Gorevler = _context.Gorevler
                 .AsNoTracking()
                 .OrderBy(g => g.TeslimTarihi)
-                .Select(g => new { g.Id, g.Baslik })
                 .ToList();
-
-            if (!_context.Gorevler.Any(g => g.Id == yorum.GorevId))
-                ModelState.AddModelError(nameof(yorum.GorevId), "Lütfen geçerli bir görev seçin.");
 
             ModelState.Remove(nameof(yorum.KullaniciAdi));
             ModelState.Remove(nameof(yorum.RowVersion));
@@ -74,35 +68,6 @@ namespace FreelanceTakipSistemi.Controllers
                 return View(yorum);
             }
 
-            // ───────────────────────────────────────────────
-            // 🔔 Bildirim kısmı:
-            try
-            {
-                // Atanan kullanıcıyı çek
-                var atananId = _context.Gorevler
-                    .Where(g => g.Id == yorum.GorevId)
-                    .Select(g => g.AtananKullaniciId)
-                    .FirstOrDefault();
-
-                if (atananId.HasValue)
-                {
-                    var note = new Notification
-                    {
-                        KullaniciId = atananId.Value,
-                        GorevId = yorum.GorevId,
-                        Message = $"Görevinize yeni yorum eklendi: “{yorum.Icerik}”",
-                        CreatedAt = DateTime.UtcNow
-                    };
-                    _context.Notifications.Add(note);
-                    _context.SaveChanges();
-                }
-            }
-            catch
-            {
-                // Bildirim ekleme başarısızsa uygulamayı etkileme
-            }
-            // ───────────────────────────────────────────────
-
             TempData["Success"] = "Yorum başarıyla kaydedildi.";
             return RedirectToAction(nameof(Index), new { gorevId = yorum.GorevId });
         }
@@ -112,13 +77,27 @@ namespace FreelanceTakipSistemi.Controllers
         {
             var yorum = _context.Yorumlar.Find(id);
             if (yorum == null) return NotFound();
+
+            ViewBag.Gorevler = _context.Gorevler
+                .AsNoTracking()
+                .OrderBy(g => g.TeslimTarihi)
+                .ToList();
+
             return View(yorum);
         }
 
         // POST: /Yorum/Edit/5
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult Edit(Yorum yorum)
+        public IActionResult Edit(int id, Yorum yorum)
         {
+            if (id != yorum.Id)
+                return BadRequest();
+
+            ViewBag.Gorevler = _context.Gorevler
+                .AsNoTracking()
+                .OrderBy(g => g.TeslimTarihi)
+                .ToList();
+
             ModelState.Remove(nameof(yorum.KullaniciAdi));
             ModelState.Remove(nameof(yorum.RowVersion));
             ModelState.Remove(nameof(yorum.Gorev));
@@ -155,7 +134,7 @@ namespace FreelanceTakipSistemi.Controllers
             var yorum = _context.Yorumlar.Find(id);
             if (yorum == null) return NotFound();
 
-            int gorevId = yorum.GorevId;
+            var gorevId = yorum.GorevId;
             _context.Yorumlar.Remove(yorum);
             try
             {

@@ -4,6 +4,7 @@ using FreelanceTakipSistemi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FreelanceTakipSistemi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250528192533_AddKullaniciNavigationToYorum")]
+    partial class AddKullaniciNavigationToYorum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,9 +218,6 @@ namespace FreelanceTakipSistemi.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("KullaniciId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("OlusturmaTarihi")
                         .HasColumnType("datetime2");
 
@@ -229,8 +229,6 @@ namespace FreelanceTakipSistemi.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GorevId");
-
-                    b.HasIndex("KullaniciId");
 
                     b.ToTable("Yorumlar");
                 });
@@ -292,13 +290,7 @@ namespace FreelanceTakipSistemi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FreelanceTakipSistemi.Models.Kullanici", "Kullanici")
-                        .WithMany()
-                        .HasForeignKey("KullaniciId");
-
                     b.Navigation("Gorev");
-
-                    b.Navigation("Kullanici");
                 });
 
             modelBuilder.Entity("FreelanceTakipSistemi.Models.Gorev", b =>

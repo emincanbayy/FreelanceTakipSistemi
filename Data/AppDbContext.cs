@@ -15,6 +15,5 @@ namespace FreelanceTakipSistemi.Data
 
         // 🆕 Yeni eklenen tablolar
         public DbSet<Sirket> Sirketler { get; set; }
-        public DbSet<Notification> Notifications { get; set; }
     }
 }
