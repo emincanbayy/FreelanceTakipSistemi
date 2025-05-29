@@ -1,48 +1,53 @@
-﻿using System;
-using Microsoft.AspNetCore.Authentication.Cookies;  // Cookie tabanlı giriş
-using Microsoft.EntityFrameworkCore;  // EF Core veritabanı işlemleri
-using FreelanceTakipSistemi.Data;  // AppDbContext burada
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+using FreelanceTakipSistemi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 🔗 1. Veritabanı bağlantısı (EF Core + SQL Server)
+// 1. EF Core + SQL Server bağlantısı
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 🔐 2. Cookie tabanlı kimlik doğrulama ayarları
+// 2. Cookie tabanlı kimlik doğrulama ayarları
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Kullanici/Giris";  // Giriş yapmayanlar buraya yönlendirilecek
-        options.AccessDeniedPath = "/Kullanici/Giris";  // Yetkisiz erişimlerde de buraya yönlendirilecek
+        options.LoginPath = "/Kullanici/Giris"; // Giriş yapmamış kullanıcılar buraya yönlendirilir
+        options.AccessDeniedPath = "/Home/AccessDenied"; // Yetkisi olmayan (örneğin admin olmayan) kullanıcılar buraya yönlendirilir
     });
 
-// 🧱 3. MVC Controller + View desteği
+// 3. Admin policy tanımı
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireClaim(ClaimTypes.Role, "Admin"));
+});
+
+// 4. MVC Controller + Razor View desteği
 builder.Services.AddControllersWithViews();
 
-// ⚙️ 4. Uygulama oluşturuluyor
 var app = builder.Build();
 
-// 🔧 5. Ortama göre hata sayfası veya geliştirici istisna sayfası
+// 5. Hata ayarları
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");  // Hata durumunda gösterilecek sayfa
-    app.UseHsts();  // Güvenlik için tarayıcıya HTTPS zorlaması
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
 }
 
-// 🌐 6. HTTP istek yaşam döngüsü ayarları
-app.UseHttpsRedirection();  // HTTP → HTTPS yönlendirmesi
-app.UseStaticFiles();  // wwwroot içindeki dosyaları sun
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 
-app.UseRouting();  // Routing sistemi aktif
+app.UseRouting();
 
-app.UseAuthentication();  // Kullanıcı oturum kontrolü
-app.UseAuthorization();  // Rol/yetki kontrolü
+// 6. Kimlik ve Yetki kontrol middleware'leri
+app.UseAuthentication();
+app.UseAuthorization();
 
-// 🚪 7. Varsayılan rota (Giriş yapılmışsa buradan başlar)
+// 7. Varsayılan rota
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// ▶️ 8. Uygulamayı başlat
 app.Run();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using FreelanceTakipSistemi.Models;
 
 namespace FreelanceTakipSistemi.Controllers
 {
+    [Authorize]
     public class GorevController : Controller
     {
         private readonly AppDbContext _context;
@@ -43,20 +45,27 @@ namespace FreelanceTakipSistemi.Controllers
         }
 
         // GET: /Gorev/Create
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult Create()
         {
-            ViewBag.ProjeList = new SelectList(_context.Projeler.ToList(), "ProjeId", "Baslik");
+            ViewBag.ProjeList = new SelectList(
+                _context.Projeler.OrderBy(p => p.Baslik).ToList(),
+                "ProjeId", "Baslik"
+            );
             return View(new Gorev());
         }
 
         // POST: /Gorev/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult Create(Gorev gorev)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.ProjeList = new SelectList(_context.Projeler.ToList(), "ProjeId", "Baslik");
+                ViewBag.ProjeList = new SelectList(
+                    _context.Projeler.OrderBy(p => p.Baslik).ToList(),
+                    "ProjeId", "Baslik", gorev.ProjeId
+                );
                 return View(gorev);
             }
 
@@ -68,24 +77,31 @@ namespace FreelanceTakipSistemi.Controllers
         }
 
         // GET: /Gorev/Edit/5
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult Edit(int id)
         {
             var gorev = _context.Gorevler.Find(id);
             if (gorev == null)
                 return NotFound();
 
-            ViewBag.ProjeList = new SelectList(_context.Projeler.ToList(), "ProjeId", "Baslik", gorev.ProjeId);
+            ViewBag.ProjeList = new SelectList(
+                _context.Projeler.OrderBy(p => p.Baslik).ToList(),
+                "ProjeId", "Baslik", gorev.ProjeId
+            );
             return View(gorev);
         }
 
         // POST: /Gorev/Edit
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult Edit(Gorev gorev)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.ProjeList = new SelectList(_context.Projeler.ToList(), "ProjeId", "Baslik", gorev.ProjeId);
+                ViewBag.ProjeList = new SelectList(
+                    _context.Projeler.OrderBy(p => p.Baslik).ToList(),
+                    "ProjeId", "Baslik", gorev.ProjeId
+                );
                 return View(gorev);
             }
 
@@ -96,6 +112,7 @@ namespace FreelanceTakipSistemi.Controllers
         }
 
         // GET: /Gorev/Delete/5
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult Delete(int id)
         {
             var gorev = _context.Gorevler
@@ -109,8 +126,8 @@ namespace FreelanceTakipSistemi.Controllers
         }
 
         // POST: /Gorev/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
+        [Authorize(Policy = "AdminOnly")]
         public IActionResult DeleteConfirmed(int id)
         {
             var gorev = _context.Gorevler.Find(id);

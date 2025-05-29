@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Admin Paneli";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary"><i class="fas fa-crown"></i> Admin Paneli</h1>
+        <p class="lead text-muted">Yönetim sende! Yetkili erişim alanındasın.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-plus-circle fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">Yeni Proje Ekle</h5>
+                    <p class="card-text">Sisteme yeni bir proje kaydet.</p>
+                    <a href="/Proje/Create" class="btn btn-outline-success w-100">Git</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-tasks fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">Yeni Görev Ekle</h5>
+                    <p class="card-text">Projeler için görev tanımla.</p>
+                    <a href="/Gorev/Create" class="btn btn-outline-warning w-100">Git</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-folder-open fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">Tüm Projeler</h5>
+                    <p class="card-text">Kayıtlı tüm projeleri görüntüle.</p>
+                    <a href="/Proje" class="btn btn-outline-info w-100">Git</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-list-check fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">Tüm Görevler</h5>
+                    <p class="card-text">Tüm görevleri listele ve yönet.</p>
+                    <a href="/Gorev" class="btn btn-outline-primary w-100">Git</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

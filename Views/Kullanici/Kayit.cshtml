@@ -1,58 +1,95 @@
 ﻿@model FreelanceTakipSistemi.Models.KullaniciRegisterViewModel
-
 @{
+    Layout = null;
     ViewData["Title"] = "Kayıt Ol";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6">
-        <h2 class="mb-4 text-center">@ViewData["Title"]</h2>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - FreelanceTakipSistemi</title>
 
-        @* Kayıt başarılıysa mesaj göster *@
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+        body {
+            background: linear-gradient(to right, #43cea2, #185a9d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            border: none;
+        }
+
+            .btn-gradient:hover {
+                background: linear-gradient(135deg, #009e88, #7cbf22);
+            }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <h2 class="text-center mb-4 text-success"><i class="bi bi-person-plus-fill me-1"></i> Kayıt Ol</h2>
+
         @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                @TempData["Success"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Kapat"></button>
-            </div>
+            <div class="alert alert-success text-center">@TempData["Success"]</div>
         }
 
         <form asp-action="Kayit" method="post" novalidate>
-            @* Genel validation özetini göster *@
+            @Html.AntiForgeryToken()
+
             <div asp-validation-summary="All" class="alert alert-danger"></div>
 
             <div class="mb-3">
-                <label asp-for="Isim" class="form-label">İsim</label>
-                <input asp-for="Isim" class="form-control" placeholder="Adınızı giriniz" />
-                <span asp-validation-for="Isim" class="text-danger"></span>
+                <label asp-for="Isim" class="form-label"><i class="bi bi-person-fill me-1"></i> İsim</label>
+                <input asp-for="Isim" class="form-control" />
+                <span asp-validation-for="Isim" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Email" class="form-label">E-posta</label>
-                <input asp-for="Email" class="form-control" placeholder="E-posta adresinizi giriniz" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+                <label asp-for="Email" class="form-label"><i class="bi bi-envelope-fill me-1"></i> E-posta</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger small"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Parola" class="form-label">Parola</label>
-                <input asp-for="Parola" type="password" class="form-control" placeholder="Parolanızı belirleyin" />
-                <span asp-validation-for="Parola" class="text-danger"></span>
+                <label asp-for="Parola" class="form-label"><i class="bi bi-lock-fill me-1"></i> Parola</label>
+                <input asp-for="Parola" type="password" class="form-control" />
+                <span asp-validation-for="Parola" class="text-danger small"></span>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="ParolaTekrar" class="form-label">Parola (Tekrar)</label>
-                <input asp-for="ParolaTekrar" type="password" class="form-control" placeholder="Parolanızı tekrar giriniz" />
-                <span asp-validation-for="ParolaTekrar" class="text-danger"></span>
+            <div class="mb-4">
+                <label asp-for="ParolaTekrar" class="form-label"><i class="bi bi-lock-fill me-1"></i> Parola (Tekrar)</label>
+                <input asp-for="ParolaTekrar" type="password" class="form-control" />
+                <span asp-validation-for="ParolaTekrar" class="text-danger small"></span>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center">
-                <button type="submit" class="btn btn-success">Kayıt Ol</button>
-                <a asp-action="Giris" class="text-decoration-none">Zaten hesabın var mı? Giriş Yap</a>
+            <div class="d-grid mb-3">
+                <button type="submit" class="btn btn-gradient text-white btn-lg">Kayıt Ol</button>
+            </div>
+
+            <div class="text-center">
+                <a asp-action="Giris" class="link-light small">Zaten hesabın var mı? Giriş Yap</a>
             </div>
         </form>
-    </div>
-</div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+        <partial name="_ValidationScriptsPartial" />
+    </div>
+</body>
+</html>

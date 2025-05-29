@@ -11,35 +11,63 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">FreelanceTakipSistemi</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav" aria-controls="navbarNav"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Proje">Projeler</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Gorev">Görevler</a></li>
-                        @if (User.IsInRole("Admin"))
+
+    @* Giriş ve Kayıt sayfalarında navbar'ı gösterme *@
+    @if (!(ViewContext.RouteData.Values["Controller"]?.ToString() == "Kullanici"
+    && (ViewContext.RouteData.Values["Action"]?.ToString() == "Giris"
+    || ViewContext.RouteData.Values["Action"]?.ToString() == "Kayit")))
+    {
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">FreelanceTakipSistemi</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarNav" aria-controls="navbarNav"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item"><a class="nav-link" href="/Admin">Admin</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Proje" asp-action="Index">Projeler</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Gorev" asp-action="Index">Görevler</a>
+                            </li>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Proje" asp-action="Create">Yeni Proje Ekle</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Gorev" asp-action="Create">Yeni Görev Ekle</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Admin" asp-action="Index">Admin Paneli</a>
+                                </li>
+                            }
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Kullanici" asp-action="Cikis">Çıkış</a>
+                            </li>
                         }
-                        <li class="nav-item"><a class="nav-link" href="/Kullanici/Cikis">Çıkış</a></li>
-                    }
-                    else
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Kullanici/Giris">Giriş</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/Kullanici/Kayit">Kayıt Ol</a></li>
-                    }
-                </ul>
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Kullanici" asp-action="Giris">Giriş</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Kullanici" asp-action="Kayit">Kayıt Ol</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    }
 
     <div class="container mt-4">
         @RenderBody()

@@ -1,9 +1,9 @@
-// Controllers/HomeController.cs
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using FreelanceTakipSistemi.Data;
 using FreelanceTakipSistemi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -21,16 +21,14 @@ namespace FreelanceTakipSistemi.Controllers
             _context = context;
         }
 
-        // GET: / or /Home/Index
+        // GET: /
         public async Task<IActionResult> Index()
         {
-            // Veritabanýndan þirketleri çek
             var sirketler = await _context.Sirketler
                 .AsNoTracking()
                 .OrderBy(s => s.Ad)
                 .ToListAsync();
 
-            // ViewBag'e ata
             ViewBag.Sirketler = sirketler;
             return View();
         }
@@ -49,6 +47,14 @@ namespace FreelanceTakipSistemi.Controllers
             {
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
             });
+        }
+
+        // GET: /Home/AccessDenied
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            Response.StatusCode = StatusCodes.Status403Forbidden;
+            return View();
         }
     }
 }
